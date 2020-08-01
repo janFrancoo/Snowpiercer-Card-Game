@@ -1,10 +1,13 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 
-export default function GameLoadingView() {
+export default function GameLoadingView({ navigation }) {
     return (
         <View style={styles.container}>
-            <Text style={styles.helloWorld}>{"Hello, Snowpiercer!"}</Text>
+            <Text style={styles.text}>Hello, Snowpiercer!</Text>
+            <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate("CardGameView")}>
+                <Text style={styles.text}>Start</Text>
+            </TouchableOpacity>
         </View>
     )
 }
@@ -16,7 +19,15 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
     },
-    helloWorld: {
+    text: {
         color: "white"
+    },
+    nextButton: {
+        width: "50%",
+        padding: 10,
+        alignItems: "center",
+        backgroundColor: "#841584",
+        marginTop: 50,
+        borderRadius: 10
     }
 })
