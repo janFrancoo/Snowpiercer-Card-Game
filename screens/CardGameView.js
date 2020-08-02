@@ -1,8 +1,9 @@
 import React from "react";
-import { StyleSheet, View, Text, Dimensions } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from "react-native";
 import Swiper from "react-native-deck-swiper";
 import scenerios from "../scenerios/scenerios"
 import colors from "../config/colors"
+import ProgressBar from 'react-native-progress/Bar'
 
 const Card = ({ card }) => {
     return (
@@ -12,21 +13,67 @@ const Card = ({ card }) => {
     );
 };
 
-export default function CardGameView() {
+export default function CardGameView({ navigation }) {
     console.disableYellowBox = true;
     const { width, height} = Dimensions.get('window');
 
     const [index, setIndex] = React.useState(0)
+    const [p1, setP1] = React.useState(0.5)
+    const [p2, setP2] = React.useState(0.5)
+    const [p3, setP3] = React.useState(0.5)
+    const [p4, setP4] = React.useState(0.5)
 
     const onSwiped = (idx, direction) => {
-        console.log(scenerios[idx].onSwiped[direction])
+        setP1(p1 + scenerios[idx].onSwiped[direction].p1)
+        setP2(p2 + scenerios[idx].onSwiped[direction].p2)
+        setP3(p3 + scenerios[idx].onSwiped[direction].p3)
+        setP4(p4 + scenerios[idx].onSwiped[direction].p4)
         setIndex((index + 1) % scenerios.length)
     }
 
     return (
         <View style={styles.container}>
             <View style={styles.topContainer}>
-                <Text style={styles.textWhite}>Top</Text>
+                <View style={styles.progressContainer}>
+                    <ProgressBar 
+                        style={styles.progressBar} 
+                        width={height * 8 / 100} 
+                        height={8}
+                        borderRadius={15}
+                        color={colors.white}
+                        progress={p1}
+                    />
+                </View>
+                <View style={styles.progressContainer}>
+                    <ProgressBar 
+                        style={styles.progressBar} 
+                        width={height * 8 / 100} 
+                        height={8}
+                        borderRadius={15}
+                        color={colors.white}
+                        progress={p2}
+                    />
+                </View>
+                <View style={styles.progressContainer}>
+                    <ProgressBar 
+                        style={styles.progressBar} 
+                        width={height * 8 / 100} 
+                        height={8}
+                        borderRadius={15}
+                        color={colors.white}
+                        progress={p3}
+                    />
+                </View>
+                <View style={styles.progressContainer}>
+                    <ProgressBar 
+                        style={styles.progressBar} 
+                        width={height * 8 / 100} 
+                        height={8}
+                        borderRadius={15}
+                        color={colors.white}
+                        progress={p4}
+                    />
+                </View>
             </View>
             <View style={styles.swiperContainer}>
                 <Swiper
@@ -35,11 +82,11 @@ export default function CardGameView() {
                     renderCard={(card) => <Card card={card} />} 
                     onSwipedLeft={(idx) => onSwiped(idx, "left")}
                     onSwipedRight={(idx) => onSwiped(idx, "right")}
-                    stackSize={scenerios.length}
                     disableTopSwipe
                     disableBottomSwipe
                     animateCardOpacity
                     cardHorizontalMargin={width * 10 / 100}
+                    stackSize={5}
                     infinite
                     backgroundColor={colors.white}
                     useViewOverflow={Platform.OS === 'ios'}
@@ -81,7 +128,15 @@ export default function CardGameView() {
                 </Swiper>
             </View>
             <View style={styles.bottomContainer}>
-                <Text style={styles.textWhite}>Bottom</Text>
+                <TouchableOpacity style={styles.buttonLeft} onPress={() => navigation.navigate("PeopleView")}>
+                    <Text style={styles.textWhite}>People</Text>
+                </TouchableOpacity>
+                <View style={styles.daysPanel}>
+                    <Text style={styles.textWhite}>Day 0</Text>
+                </View>
+                <TouchableOpacity style={styles.buttonRight} onPress={() => navigation.navigate("SettingsView")}>
+                    <Text style={styles.textWhite}>Settings</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -108,13 +163,12 @@ const styles = StyleSheet.create({
     },
     topContainer: {
         flex: 0.20,
-        alignItems: "center",
-        justifyContent: "center"
+        flexDirection: 'row'
     },
     bottomContainer: {
         flex: 0.10,
-        alignItems: "center",
-        justifyContent: "center"
+        flexDirection: 'row',
+        justifyContent: "space-evenly"
     },
     textWhite: {
         color: colors.white
@@ -124,5 +178,35 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginTop: 20,
         fontSize: 16
+    },
+    progressContainer: {
+        flex: 0.25,
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    progressBar: {
+        transform: [{ rotate: '270deg'}],
+    },
+    buttonLeft: {
+        width: "25%",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRightColor: colors.white,
+        borderWidth: 1
+    },
+    daysPanel: {
+        width: "50%",
+        justifyContent: "center",
+        alignItems: "center",
+        borderLeftColor: colors.white,
+        borderRightColor: colors.white,
+        borderWidth: 1
+    },
+    buttonRight: {
+        width: "25%",
+        justifyContent: "center",
+        alignItems: "center",
+        borderLeftColor: colors.white,
+        borderWidth: 1
     }
 });

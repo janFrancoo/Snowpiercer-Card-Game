@@ -2,6 +2,8 @@ import "react-native-gesture-handler";
 import React from "react";
 import GameLoadingView from "./screens/GameLoadingView";
 import CardGameView from "./screens/CardGameView";
+import PeopleView from "./screens/PeopleView";
+import SettingsView from "./screens/SettingsView";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -35,6 +37,8 @@ export default function App() {
         mode="modal">
         <Stack.Screen name="GameLoadingView" component={GameLoadingView} />
         <Stack.Screen name="CardGameView" component={CardGameView} />
+        <Stack.Screen name="PeopleView" component={PeopleView} />
+        <Stack.Screen name="SettingsView" component={SettingsView} />
       </Stack.Navigator>
     </NavigationContainer>
   );
