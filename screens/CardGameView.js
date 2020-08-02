@@ -29,6 +29,18 @@ export default function CardGameView({ navigation }) {
         setP3(p3 + scenerios[idx].onSwiped[direction].p3)
         setP4(p4 + scenerios[idx].onSwiped[direction].p4)
         setIndex((index + 1) % scenerios.length)
+        checkFullOrEmpty()
+    }
+
+    const checkFullOrEmpty = () => {
+        const progresses = [p1, p2, p3, p4]
+
+        progresses.forEach((p, idx) => {
+            if (p === 1)
+                navigation.navigate("GameOverView", { e: { p: idx, q: "full" }})
+            else if (p === 0)
+                navigation.navigate("GameOverView", { e: { p: idx, q: "empty" } })
+        })
     }
 
     return (
