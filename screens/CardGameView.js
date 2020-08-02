@@ -1,33 +1,8 @@
 import React from "react";
 import { StyleSheet, View, Text, Dimensions } from "react-native";
 import Swiper from "react-native-deck-swiper";
-
-const data = [
-    {
-        id: 1,
-        text: "Card #1",
-        possibilities: {
-            toLeft: "left",
-            toRight: "right"
-        }
-    },
-    {
-        id: 2,
-        text: "Card #2",
-        possibilities: {
-            toLeft: "left",
-            toRight: "right"
-        }
-    },
-    {
-        id: 3,
-        text: "Card #3",
-        possibilities: {
-            toLeft: "left",
-            toRight: "right"
-        }
-    }
-]
+import scenerios from "../scenerios/scenerios"
+import colors from "../config/colors"
 
 const Card = ({ card }) => {
     return (
@@ -39,12 +14,13 @@ const Card = ({ card }) => {
 
 export default function CardGameView() {
     console.disableYellowBox = true;
+    const { width, height} = Dimensions.get('window');
 
-    const { width } = Dimensions.get('window')
     const [index, setIndex] = React.useState(0)
 
-    const onSwiped = () => {
-        setIndex((index + 1) % data.length)
+    const onSwiped = (idx, direction) => {
+        console.log(scenerios[idx].onSwiped[direction])
+        setIndex((index + 1) % scenerios.length)
     }
 
     return (
@@ -54,55 +30,55 @@ export default function CardGameView() {
             </View>
             <View style={styles.swiperContainer}>
                 <Swiper
-                    cards={data} 
-                    cardIndex={index} 
+                    cards={scenerios}
+                    cardIndex={index}
                     renderCard={(card) => <Card card={card} />} 
-                    onSwiped={onSwiped}
-                    stackSize={data.length}
-                    cardVerticalMargin={50}
+                    onSwipedLeft={(idx) => onSwiped(idx, "left")}
+                    onSwipedRight={(idx) => onSwiped(idx, "right")}
+                    stackSize={scenerios.length}
                     disableTopSwipe
                     disableBottomSwipe
                     animateCardOpacity
-                    animateOverlayLabelsOpacity
+                    cardHorizontalMargin={width * 10 / 100}
                     infinite
-                    backgroundColor={"white"}
+                    backgroundColor={colors.white}
                     useViewOverflow={Platform.OS === 'ios'}
                     overlayLabels={{
                         left: {
-                            title: 'No',
+                            title: scenerios[index].choices.left,
                             style: {
                                 label: {
-                                    color: "white",
-                                    fontSize: 18
+                                    color: colors.white,
+                                    fontSize: 16
                                 },
                                 wrapper: {
                                     flexDirection: "column",
                                     alignItems: "flex-end",
                                     justifyContent: "flex-start",
-                                    marginTop: 20,
-                                    marginRight: 20
+                                    marginTop: height * 15 / 100,
+                                    marginRight: width * 10 / 100
                                 }
                             }
                         },
                         right: {
-                            title: 'Yes',
+                            title: scenerios[index].choices.right,
                             style: {
                                 label: {
-                                    color: "white",
-                                    fontSize: 18
+                                    color: colors.white,
+                                    fontSize: 16
                                 },
                                 wrapper: {
                                     flexDirection: "column",
                                     alignItems: "flex-start",
                                     justifyContent: "flex-start",
-                                    marginTop: 20,
-                                    marginLeft: 20
+                                    marginTop: height * 15 / 100,
+                                    marginLeft: width * 10 / 100
                                 }
                             }
                         },
                     }}>
-                        <Text style={styles.swiperText}>TEST</Text>
-                    </Swiper>
+                    <Text style={styles.swiperText}>{scenerios[index].text}</Text>
+                </Swiper>
             </View>
             <View style={styles.bottomContainer}>
                 <Text style={styles.textWhite}>Bottom</Text>
@@ -113,43 +89,38 @@ export default function CardGameView() {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        backgroundColor: colors.black,
+        justifyContent: "flex-end"
     },
     swiperContainer: {
-        flex: 0.70
+        flex: 0.70,
+        justifyContent: "center",
+        alignItems: "center"
     },
     card: {
+        marginTop: "30%",
         height: "50%",
         borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: "black",
-        shadowColor: "white",
-        shadowOffset: {
-            width: 0,
-            height: 12,
-        },
-        shadowOpacity: 0.58,
-        shadowRadius: 16,
-        elevation: 24,
+        backgroundColor: colors.black
     },
     topContainer: {
         flex: 0.20,
-        backgroundColor: "black",
         alignItems: "center",
         justifyContent: "center"
     },
     bottomContainer: {
         flex: 0.10,
-        backgroundColor: "black",
         alignItems: "center",
         justifyContent: "center"
     },
     textWhite: {
-        color: "white"
+        color: colors.white
     },
     swiperText: {
-        color: "black",
+        color: colors.black,
         textAlign: "center",
         marginTop: 20,
         fontSize: 16
