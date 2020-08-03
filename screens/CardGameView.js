@@ -37,9 +37,9 @@ export default function CardGameView({ navigation }) {
 
         progresses.forEach((p, idx) => {
             if (p === 1)
-                navigation.navigate("GameOverView", { e: { p: idx, q: "full" }})
+                navigation.replace("GameOverView", { e: { p: idx, q: "full" }})
             else if (p === 0)
-                navigation.navigate("GameOverView", { e: { p: idx, q: "empty" } })
+                navigation.replace("GameOverView", { e: { p: idx, q: "empty" } })
         })
     }
 
@@ -98,7 +98,7 @@ export default function CardGameView({ navigation }) {
                     disableBottomSwipe
                     animateCardOpacity
                     cardHorizontalMargin={width * 10 / 100}
-                    stackSize={5}
+                    stackSize={(scenerios.length >= 5 ? 5 : scenerios.length)}
                     infinite
                     backgroundColor={colors.white}
                     useViewOverflow={Platform.OS === 'ios'}

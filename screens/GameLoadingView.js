@@ -6,7 +6,7 @@ export default function GameLoadingView({ navigation }) {
     return (
         <View style={styles.container}>
             <Text style={styles.textWhite}>Hello, Snowpiercer!</Text>
-            <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate("CardGameView")}>
+            <TouchableOpacity style={styles.nextButton} onPress={() => navigation.replace("CardGameView")}>
                 <Text style={styles.textBlack}>Start</Text>
             </TouchableOpacity>
         </View>
