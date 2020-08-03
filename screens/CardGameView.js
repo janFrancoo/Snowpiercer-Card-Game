@@ -4,6 +4,8 @@ import Swiper from "react-native-deck-swiper";
 import scenerios from "../scenerios/scenerios"
 import colors from "../config/colors"
 import ProgressBar from 'react-native-progress/Bar'
+import { faHammer, faTrain } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 
 const Card = ({ card }) => {
     return (
@@ -141,13 +143,13 @@ export default function CardGameView({ navigation }) {
             </View>
             <View style={styles.bottomContainer}>
                 <TouchableOpacity style={styles.buttonLeft} onPress={() => navigation.navigate("PeopleView")}>
-                    <Text style={styles.textWhite}>People</Text>
+                    <FontAwesomeIcon icon={ faTrain } size={ 32 } color={colors.white} />
                 </TouchableOpacity>
                 <View style={styles.daysPanel}>
                     <Text style={styles.textWhite}>Day 0</Text>
                 </View>
                 <TouchableOpacity style={styles.buttonRight} onPress={() => navigation.navigate("SettingsView")}>
-                    <Text style={styles.textWhite}>Settings</Text>
+                    <FontAwesomeIcon icon={ faHammer } size={ 32 } color={colors.white} />
                 </TouchableOpacity>
             </View>
         </View>

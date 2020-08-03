@@ -1,4 +1,5 @@
 export default {
     black: "#000000",
-    white: "#FFFFFF"
+    white: "#FFFFFF",
+    gray: "#808080"
 }

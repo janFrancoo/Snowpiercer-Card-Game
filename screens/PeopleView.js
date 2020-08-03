@@ -1,5 +1,7 @@
 import React from 'react'
 import { StyleSheet, SafeAreaView, View, Text, FlatList, TouchableOpacity, Platform } from 'react-native'
+import { faHammer, faTrain } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import colors from "../config/colors"
 import people from "../scenerios/people"
 
@@ -22,13 +24,13 @@ export default function PeopleView({ navigation }) {
             </View>
             <View style={styles.bottomContainer}>
                 <View style={styles.buttonLeft}>
-                    <Text style={styles.textWhite}>People</Text>
+                    <FontAwesomeIcon icon={ faTrain } size={ 32 } color={colors.white} />
                 </View>
                 <TouchableOpacity style={styles.daysPanel} onPress={() => navigation.navigate("CardGameView")}>
                     <Text style={styles.textWhite}>Day 0</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.buttonRight} onPress={() => navigation.navigate("SettingsView")}>
-                    <Text style={styles.textWhite}>Settings</Text>
+                    <FontAwesomeIcon icon={ faHammer } size={ 32 } color={colors.white} />
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
