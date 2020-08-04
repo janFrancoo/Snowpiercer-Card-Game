@@ -3,6 +3,7 @@ import React from "react";
 import GameLoadingView from "./screens/GameLoadingView";
 import CardGameView from "./screens/CardGameView";
 import PeopleView from "./screens/PeopleView";
+import PersonDetailView from "./screens/PersonDetailView"
 import SettingsView from "./screens/SettingsView";
 import GameOverView from "./screens/GameOverView";
 import { NavigationContainer } from "@react-navigation/native";
@@ -39,6 +40,7 @@ export default function App() {
         <Stack.Screen name="GameLoadingView" component={GameLoadingView} />
         <Stack.Screen name="CardGameView" component={CardGameView} />
         <Stack.Screen name="PeopleView" component={PeopleView} />
+        <Stack.Screen name="PersonDetailView" component={PersonDetailView} />
         <Stack.Screen name="SettingsView" component={SettingsView} />
         <Stack.Screen name="GameOverView" component={GameOverView} />
       </Stack.Navigator>

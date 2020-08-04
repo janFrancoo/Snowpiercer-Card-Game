@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from "react-nati
 import Swiper from "react-native-deck-swiper";
 import scenerios from "../scenerios/scenerios"
 import colors from "../config/colors"
+import lang from "../config/lang"
 import ProgressBar from 'react-native-progress/Bar'
 import { faHammer, faTrain } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
@@ -26,11 +27,11 @@ export default function CardGameView({ navigation }) {
     const [p4, setP4] = React.useState(0.5)
 
     const onSwiped = (idx, direction) => {
-        setP1(p1 + scenerios[idx].onSwiped[direction].p1)
-        setP2(p2 + scenerios[idx].onSwiped[direction].p2)
-        setP3(p3 + scenerios[idx].onSwiped[direction].p3)
-        setP4(p4 + scenerios[idx].onSwiped[direction].p4)
-        setIndex((index + 1) % scenerios.length)
+        setP1(p1 + scenerios[global.language || 'en'][idx].onSwiped[direction].p1)
+        setP2(p2 + scenerios[global.language || 'en'][idx].onSwiped[direction].p2)
+        setP3(p3 + scenerios[global.language || 'en'][idx].onSwiped[direction].p3)
+        setP4(p4 + scenerios[global.language || 'en'][idx].onSwiped[direction].p4)
+        setIndex((index + 1) % scenerios[global.language || 'en'].length)
         checkFullOrEmpty()
     }
 
@@ -91,7 +92,7 @@ export default function CardGameView({ navigation }) {
             </View>
             <View style={styles.swiperContainer}>
                 <Swiper
-                    cards={scenerios}
+                    cards={scenerios[global.language || 'en']}
                     cardIndex={index}
                     renderCard={(card) => <Card card={card} />} 
                     onSwipedLeft={(idx) => onSwiped(idx, "left")}
@@ -100,13 +101,13 @@ export default function CardGameView({ navigation }) {
                     disableBottomSwipe
                     animateCardOpacity
                     cardHorizontalMargin={width * 10 / 100}
-                    stackSize={(scenerios.length >= 5 ? 5 : scenerios.length)}
+                    stackSize={(scenerios[global.language || 'en'].length >= 5 ? 5 : scenerios[global.language || 'en'].length)}
                     infinite
                     backgroundColor={colors.white}
                     useViewOverflow={Platform.OS === 'ios'}
                     overlayLabels={{
                         left: {
-                            title: scenerios[index].choices.left,
+                            title: scenerios[global.language || 'en'][index].choices.left,
                             style: {
                                 label: {
                                     color: colors.white,
@@ -122,7 +123,7 @@ export default function CardGameView({ navigation }) {
                             }
                         },
                         right: {
-                            title: scenerios[index].choices.right,
+                            title: scenerios[global.language || 'en'][index].choices.right,
                             style: {
                                 label: {
                                     color: colors.white,
@@ -138,7 +139,7 @@ export default function CardGameView({ navigation }) {
                             }
                         },
                     }}>
-                    <Text style={styles.swiperText}>{scenerios[index].text}</Text>
+                    <Text style={styles.swiperText}>{scenerios[global.language || 'en'][index].text}</Text>
                 </Swiper>
             </View>
             <View style={styles.bottomContainer}>
@@ -146,7 +147,7 @@ export default function CardGameView({ navigation }) {
                     <FontAwesomeIcon icon={ faTrain } size={ 32 } color={colors.white} />
                 </TouchableOpacity>
                 <View style={styles.daysPanel}>
-                    <Text style={styles.textWhite}>Day 0</Text>
+                    <Text style={styles.textWhite}>{lang[global.language || 'en'].bottomNav.middleButton}</Text>
                 </View>
                 <TouchableOpacity style={styles.buttonRight} onPress={() => navigation.navigate("SettingsView")}>
                     <FontAwesomeIcon icon={ faHammer } size={ 32 } color={colors.white} />

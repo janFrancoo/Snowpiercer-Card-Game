@@ -1,13 +1,14 @@
 import React from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import colors from "../config/colors"
+import lang from "../config/lang"
 
 export default function GameLoadingView({ navigation }) {
     return (
         <View style={styles.container}>
-            <Text style={styles.textWhite}>Hello, Snowpiercer!</Text>
+            <Text style={styles.textWhite}>{lang[global.language || 'en'].loadingScreen.loadingText}</Text>
             <TouchableOpacity style={styles.nextButton} onPress={() => navigation.replace("CardGameView")}>
-                <Text style={styles.textBlack}>Start</Text>
+                <Text style={styles.textBlack}>{lang[global.language || 'en'].loadingScreen.buttonText}</Text>
             </TouchableOpacity>
         </View>
     )

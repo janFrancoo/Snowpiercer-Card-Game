@@ -4,22 +4,26 @@ import colors from "../config/colors"
 import SelectInput from '@tele2/react-native-select-input'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faMusic, faVolumeUp, faVolumeMute, faHammer, faTrain } from '@fortawesome/free-solid-svg-icons'
+import lang from "../config/lang"
 
 export default function SettingsView({ navigation }) {
 
-    const [language, setLanguage] = React.useState('English')
+    const [language, setLanguage] = React.useState('en')
     const [music, setMusic] = React.useState(true)
     const [volume, setVolume] = React.useState(true)
 
+    global.music = music
+    global.volume = volume
+
     const startOverAlert = () => {
         Alert.alert(
-            "Start Over",
-            "All your progress will be lost, are you sure?",
+            lang[global.language || 'en'].settings.startOver.title,
+            lang[global.language || 'en'].settings.startOver.message,
             [{
-                text: "Cancel",
+                text: lang[global.language || 'en'].settings.startOver.cancel,
                 style: "cancel"
             },
-            { text: "OK", onPress: () => startOver() }],
+            { text: lang[global.language || 'en'].settings.startOver.ok, onPress: () => startOver() }],
             { cancelable: false }
         );
     }
@@ -31,33 +35,33 @@ export default function SettingsView({ navigation }) {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.settingsContainer}>
-                <Text style={styles.labels}>Select language</Text>
+                <Text style={styles.labels}>{lang[global.language || 'en'].settings.labels.selectLang}</Text>
                 <View style={styles.pickerContainer}>
                     <SelectInput
-                        options={[{ value: 'English', label: 'English' }, { value: 'Türkçe', label: 'Türkçe' }]}
-                        value={language}
+                        options={[{ value: 'en', label: 'English' }, { value: 'tr', label: 'Türkçe' }]}
+                        value={global.language || 'en'}
                         containerStyle={{width: "80%", height: "100%", backgroundColor: 'transparent' }}
                         valueStyle={{ color: colors.white }}
                         labelStyle={{ color: colors.white }}
-                        onChange={(value) => setLanguage(value)}
+                        onChange={(value) => { global.language = value; setLanguage(value) }}
                     />
                 </View>
                 <View style={styles.soundContainer}>
                     <View style={styles.musicCheck}>
-                        <Text style={styles.textWhite}>Enable music</Text>
-                        <TouchableOpacity onPress={() => setMusic(!music)}>
+                        <Text style={styles.textWhite}>{lang[global.language || 'en'].settings.labels.enableMusic}</Text>
+                        <TouchableOpacity onPress={() => { setMusic(!music); global.music = music }}>
                             <FontAwesomeIcon icon={ faMusic } size={ 32 } color={music ? colors.white : colors.gray} />
                         </TouchableOpacity>
                     </View>
                     <View style={styles.soundCheck}>
-                        <Text style={styles.textWhite}>Enable sound</Text>
-                        <TouchableOpacity onPress={() => setVolume(!volume)}>
+                        <Text style={styles.textWhite}>{lang[global.language || 'en'].settings.labels.enableSound}</Text>
+                        <TouchableOpacity onPress={() => { setVolume(!volume); global.volume = volume }}>
                             <FontAwesomeIcon icon={ volume ? faVolumeUp : faVolumeMute } size={ 32 } color={colors.white} />
                         </TouchableOpacity>
                     </View>
                 </View>
                 <TouchableOpacity style={styles.startOverBtn} onPress={() => startOverAlert()}>
-                    <Text syle={styles.textWhite}>Start Over</Text>
+                    <Text syle={styles.textWhite}>{lang[global.language || 'en'].settings.labels.startOverBtn}</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.bottomContainer}>
@@ -65,7 +69,7 @@ export default function SettingsView({ navigation }) {
                     <FontAwesomeIcon icon={ faTrain } size={ 32 } color={colors.white} />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.daysPanel} onPress={() => navigation.navigate("CardGameView")}>
-                    <Text style={styles.textWhite}>Day 0</Text>
+                    <Text style={styles.textWhite}>{lang[global.language || 'en'].bottomNav.middleButton}</Text>
                 </TouchableOpacity>
                 <View style={styles.buttonRight}>
                     <FontAwesomeIcon icon={ faHammer } size={ 32 } color={colors.white} />
