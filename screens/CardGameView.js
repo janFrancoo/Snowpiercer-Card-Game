@@ -1,20 +1,12 @@
-import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from "react-native";
+import React, { useRef, useEffect } from "react";
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated } from "react-native";
 import Swiper from "react-native-deck-swiper";
 import scenerios from "../scenerios/scenerios"
 import colors from "../config/colors"
 import lang from "../config/lang"
 import ProgressBar from 'react-native-progress/Bar'
-import { faHammer, faTrain } from '@fortawesome/free-solid-svg-icons'
+import { faHammer, faTrain, faUserSecret } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-
-const Card = ({ card }) => {
-    return (
-        <View style={styles.card}>
-            <Text style={styles.textWhite}>{card.text}</Text>
-        </View>
-    );
-};
 
 export default function CardGameView({ navigation }) {
     console.disableYellowBox = true;
@@ -25,6 +17,9 @@ export default function CardGameView({ navigation }) {
     const [p2, setP2] = React.useState(0.5)
     const [p3, setP3] = React.useState(0.5)
     const [p4, setP4] = React.useState(0.5)
+
+    const slideFromTopLeft = useRef(new Animated.Value(0)).current
+    const [finished, setFinished] = React.useState(false)
 
     const onSwiped = (idx, direction) => {
         setP1(p1 + scenerios[global.language || 'en'][idx].onSwiped[direction].p1)
@@ -45,6 +40,53 @@ export default function CardGameView({ navigation }) {
                 navigation.replace("GameOverView", { e: { p: idx, q: "empty" } })
         })
     }
+
+    const Card = ({ card }) => {
+        return (
+            <View style={styles.card}>
+                { 
+                    // card.image 
+                }
+                <FontAwesomeIcon icon={ faUserSecret } size={ 256 } color={colors.white} />
+            </View>
+        );
+    }
+
+    const AnimatedCard = ({ from }) => {
+        return (
+            <Animated.View
+                style={{
+                    transform: [{
+                        translateX: slideFromTopLeft.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [from, 0]
+                        }),
+                        translateY: slideFromTopLeft.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [from, 0]
+                        })
+                    }],
+                    height: "55%",
+                    width: "80%",
+                    borderRadius: 12,
+                    backgroundColor: colors.black,
+                    position: "absolute",
+                    top: "27%"
+            }} />
+        );
+    }
+
+    const start = () => {
+        return Animated.timing(slideFromTopLeft, {
+            toValue: 1,
+            duration: 2000,
+            useNativeDriver: true
+        }).start(() => setFinished(true))
+    }
+
+    useEffect(() => {
+        start()
+    }, [])
 
     return (
         <View style={styles.container}>
@@ -91,7 +133,7 @@ export default function CardGameView({ navigation }) {
                 </View>
             </View>
             <View style={styles.swiperContainer}>
-                <Swiper
+                { finished && <Swiper
                     cards={scenerios[global.language || 'en']}
                     cardIndex={index}
                     renderCard={(card) => <Card card={card} />} 
@@ -140,7 +182,16 @@ export default function CardGameView({ navigation }) {
                         },
                     }}>
                     <Text style={styles.swiperText}>{scenerios[global.language || 'en'][index].text}</Text>
-                </Swiper>
+                </Swiper> }
+                { !finished && <AnimatedCard from={-600} /> }
+                { !finished && <AnimatedCard from={-800} /> }
+                { !finished && <AnimatedCard from={-1000} /> }
+                { !finished && <AnimatedCard from={-1200} /> }
+                { !finished && <AnimatedCard from={-1400} /> }
+                { !finished && <AnimatedCard from={-1600} /> }
+                { !finished && <AnimatedCard from={-1800} /> }
+                { !finished && <AnimatedCard from={-2000} /> }
+                { !finished && <AnimatedCard from={-2200} /> }
             </View>
             <View style={styles.bottomContainer}>
                 <TouchableOpacity style={styles.buttonLeft} onPress={() => navigation.navigate("PeopleView")}>
@@ -166,7 +217,8 @@ const styles = StyleSheet.create({
     swiperContainer: {
         flex: 0.70,
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        backgroundColor: colors.white
     },
     card: {
         marginTop: "30%",
