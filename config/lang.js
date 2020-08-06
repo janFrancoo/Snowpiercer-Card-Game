@@ -19,7 +19,8 @@ export default {
             },
         },
         bottomNav: {
-            middleButton: "Day 0"
+            day: "Day",
+            year: "Year"
         }
     },
     tr: {
@@ -42,7 +43,8 @@ export default {
             }
         },
         bottomNav: {
-            middleButton: "Gün 0"
+            day: "Gün",
+            year: "Yıl"
         }
     }
 }
