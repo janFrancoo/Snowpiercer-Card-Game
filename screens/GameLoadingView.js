@@ -1,14 +1,18 @@
 import React from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import colors from "../config/colors"
-import lang from "../config/lang"
+import text from "../config/text"
+import { useStateValue } from "../helpers/StateProvider"
 
 export default function GameLoadingView({ navigation }) {
+
+    const [{ language }, dispatch] = useStateValue();
+
     return (
         <View style={styles.container}>
-            <Text style={styles.textWhite}>{lang[global.language || 'en'].loadingScreen.loadingText}</Text>
+            <Text style={styles.textWhite}>{text[language].loadingScreen.loadingText}</Text>
             <TouchableOpacity style={styles.nextButton} onPress={() => navigation.replace("CardGameView")}>
-                <Text style={styles.textBlack}>{lang[global.language || 'en'].loadingScreen.buttonText}</Text>
+                <Text style={styles.textBlack}>{text[language].loadingScreen.buttonText}</Text>
             </TouchableOpacity>
         </View>
     )

@@ -1,39 +1,46 @@
 import React, { useRef, useEffect } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated } from "react-native";
+import { StyleSheet, View, Text, Dimensions, Animated } from "react-native";
 import Swiper from "react-native-deck-swiper";
 import scenerios from "../scenerios/scenerios"
 import colors from "../config/colors"
-import lang from "../config/lang"
 import ProgressBar from 'react-native-progress/Bar'
-import { faHammer, faTrain, faUserSecret } from '@fortawesome/free-solid-svg-icons'
+import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import AsyncStorage from '@react-native-community/async-storage'
+import { useStateValue } from "../helpers/StateProvider"
+import BottomNav from "./BottomNav"
 
 export default function CardGameView({ navigation }) {
     console.disableYellowBox = true;
     const { width, height} = Dimensions.get('window');
-
+    
     const [index, setIndex] = React.useState(0)
     const [p1, setP1] = React.useState(0.5)
     const [p2, setP2] = React.useState(0.5)
     const [p3, setP3] = React.useState(0.5)
     const [p4, setP4] = React.useState(0.5)
-    const [days, setDays] = React.useState(0)
+    const [{ language, music, volume, days }, dispatch] = useStateValue();
 
     const slideFromTopLeft = useRef(new Animated.Value(0)).current
     const [finished, setFinished] = React.useState(false)
 
     const onSwiped = (idx, direction) => {
-        setP1(p1 + scenerios[global.language || 'en'][idx].onSwiped[direction].p1)
-        setP2(p2 + scenerios[global.language || 'en'][idx].onSwiped[direction].p2)
-        setP3(p3 + scenerios[global.language || 'en'][idx].onSwiped[direction].p3)
-        setP4(p4 + scenerios[global.language || 'en'][idx].onSwiped[direction].p4)
-        setIndex((index + 1) % scenerios[global.language || 'en'].length)
+        setP1(p1 + scenerios[language][idx].onSwiped[direction].p1)
+        setP2(p2 + scenerios[language][idx].onSwiped[direction].p2)
+        setP3(p3 + scenerios[language][idx].onSwiped[direction].p3)
+        setP4(p4 + scenerios[language][idx].onSwiped[direction].p4)
+        setIndex((index + 1) % scenerios[language].length)
 
-        if (scenerios[global.language || 'en'][idx].days !== "random")
-            setDays(days + scenerios[global.language || 'en'][idx].days)
+        if (scenerios[language][idx].days !== "random")
+            dispatch({
+                type: 'changeDays',
+                newDays: days + scenerios[language][idx].days
+            })
         else
-            setDays(days + Math.floor(Math.random() * 30))
+            dispatch({
+                type: 'changeDays',
+                newDays: days + Math.floor(Math.random() * 30)
+            })
         
         storeData("days", days.toString())
 
@@ -70,15 +77,6 @@ export default function CardGameView({ navigation }) {
         try {
             await AsyncStorage.setItem(key, value)
         } catch (e) { console.log(e) }
-    }
-
-    const convertYear = (days) => {
-        const dayText = lang[global.language || 'en'].bottomNav.day
-        const yearText = lang[global.language || 'en'].bottomNav.year
-
-        if (days < 365)
-            return dayText + " " + days
-        else return yearText + " " + Math.floor(days / 365) + " " + dayText + " " + days % 365
     }
 
     const Card = ({ card }) => {
@@ -127,7 +125,10 @@ export default function CardGameView({ navigation }) {
     const getSavedData = async () => {
         const savedDays = await getData("days")
         if (savedDays !== NaN && parseInt(savedDays) !== 0)
-            setDays(parseInt(savedDays))
+            dispatch({
+                type: 'changeDays',
+                newDays: parseInt(savedDays)
+            })
     }
 
     useEffect(() => {
@@ -181,7 +182,7 @@ export default function CardGameView({ navigation }) {
             </View>
             <View style={styles.swiperContainer}>
                 { finished && <Swiper
-                    cards={scenerios[global.language || 'en']}
+                    cards={scenerios[language]}
                     cardIndex={index}
                     renderCard={(card) => <Card card={card} />} 
                     onSwipedLeft={(idx) => onSwiped(idx, "left")}
@@ -190,13 +191,13 @@ export default function CardGameView({ navigation }) {
                     disableBottomSwipe
                     animateCardOpacity
                     cardHorizontalMargin={width * 10 / 100}
-                    stackSize={(scenerios[global.language || 'en'].length >= 5 ? 5 : scenerios[global.language || 'en'].length)}
+                    stackSize={(scenerios[language].length >= 5 ? 5 : scenerios[language].length)}
                     infinite
                     backgroundColor={colors.white}
                     useViewOverflow={Platform.OS === 'ios'}
                     overlayLabels={{
                         left: {
-                            title: scenerios[global.language || 'en'][index].choices.left,
+                            title: scenerios[language][index].choices.left,
                             style: {
                                 label: {
                                     color: colors.white,
@@ -212,7 +213,7 @@ export default function CardGameView({ navigation }) {
                             }
                         },
                         right: {
-                            title: scenerios[global.language || 'en'][index].choices.right,
+                            title: scenerios[language][index].choices.right,
                             style: {
                                 label: {
                                     color: colors.white,
@@ -228,7 +229,7 @@ export default function CardGameView({ navigation }) {
                             }
                         },
                     }}>
-                    <Text style={styles.swiperText}>{scenerios[global.language || 'en'][index].text}</Text>
+                    <Text style={styles.swiperText}>{scenerios[language][index].text}</Text>
                 </Swiper> }
                 { !finished && <AnimatedCard from={-600} /> }
                 { !finished && <AnimatedCard from={-800} /> }
@@ -241,15 +242,7 @@ export default function CardGameView({ navigation }) {
                 { !finished && <AnimatedCard from={-2200} /> }
             </View>
             <View style={styles.bottomContainer}>
-                <TouchableOpacity style={styles.buttonLeft} onPress={() => navigation.navigate("PeopleView")}>
-                    <FontAwesomeIcon icon={ faTrain } size={ 32 } color={colors.white} />
-                </TouchableOpacity>
-                <View style={styles.daysPanel}>
-                    <Text style={styles.textWhite}>{convertYear(days)}</Text>
-                </View>
-                <TouchableOpacity style={styles.buttonRight} onPress={() => navigation.navigate("SettingsView")}>
-                    <FontAwesomeIcon icon={ faHammer } size={ 32 } color={colors.white} />
-                </TouchableOpacity>
+                <BottomNav navigation={navigation} />
             </View>
         </View>
     );
@@ -281,8 +274,7 @@ const styles = StyleSheet.create({
     },
     bottomContainer: {
         flex: 0.10,
-        flexDirection: 'row',
-        justifyContent: "space-evenly"
+        justifyContent: "center"
     },
     textWhite: {
         color: colors.white
@@ -300,27 +292,5 @@ const styles = StyleSheet.create({
     },
     progressBar: {
         transform: [{ rotate: '270deg'}],
-    },
-    buttonLeft: {
-        width: "25%",
-        justifyContent: "center",
-        alignItems: "center",
-        borderRightColor: colors.white,
-        borderWidth: 1
-    },
-    daysPanel: {
-        width: "50%",
-        justifyContent: "center",
-        alignItems: "center",
-        borderLeftColor: colors.white,
-        borderRightColor: colors.white,
-        borderWidth: 1
-    },
-    buttonRight: {
-        width: "25%",
-        justifyContent: "center",
-        alignItems: "center",
-        borderLeftColor: colors.white,
-        borderWidth: 1
     }
 });

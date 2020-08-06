@@ -1,9 +1,7 @@
 import React from 'react'
-import { StyleSheet, SafeAreaView, View, Text, Image, TouchableOpacity, ScrollView, Platform } from 'react-native'
+import { StyleSheet, SafeAreaView, View, Text, Image, ScrollView, Platform } from 'react-native'
 import colors from "../config/colors"
-import lang from "../config/lang"
-import { faHammer, faTrain } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import BottomNav from "./BottomNav"
 
 export default function PersonDetailView({ navigation, route }) {
     return (
@@ -19,15 +17,7 @@ export default function PersonDetailView({ navigation, route }) {
                 </ScrollView>
             </View>
             <View style={styles.bottomContainer}>
-                <TouchableOpacity style={styles.buttonLeft} onPress={() => navigation.navigate("PeopleView")}>
-                    <FontAwesomeIcon icon={ faTrain } size={ 32 } color={colors.white} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.daysPanel} onPress={() => navigation.navigate("CardGameView")}>
-                    <Text style={styles.textWhite}>{lang[global.language || 'en'].bottomNav.middleButton}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonRight} onPress={() => navigation.navigate("SettingsView")}>
-                    <FontAwesomeIcon icon={ faHammer } size={ 32 } color={colors.white} />
-                </TouchableOpacity>
+                <BottomNav navigation={navigation} />
             </View>
         </SafeAreaView>
     )
@@ -63,30 +53,7 @@ const styles = StyleSheet.create({
     },
     bottomContainer: {
         flex: 0.1,
-        flexDirection: 'row',
-        justifyContent: "space-evenly"
-    },
-    buttonLeft: {
-        width: "25%",
-        justifyContent: "center",
-        alignItems: "center",
-        borderRightColor: colors.white,
-        borderWidth: 1
-    },
-    daysPanel: {
-        width: "50%",
-        justifyContent: "center",
-        alignItems: "center",
-        borderLeftColor: colors.white,
-        borderRightColor: colors.white,
-        borderWidth: 1
-    },
-    buttonRight: {
-        width: "25%",
-        justifyContent: "center",
-        alignItems: "center",
-        borderLeftColor: colors.white,
-        borderWidth: 1
+        justifyContent: "center"
     },
     textWhite: {
         color: colors.white

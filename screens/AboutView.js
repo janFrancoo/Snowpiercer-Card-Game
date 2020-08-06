@@ -1,14 +1,18 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import lang from "../config/lang"
+import text from "../config/text"
 import colors from "../config/colors"
+import { useStateValue } from "../helpers/StateProvider"
 
 export default function AboutView() {
+
+    const [{ language }, dispatch] = useStateValue();
+
     return (
         <View style={styles.container}>
             <View style={styles.about}>
                 <Text style={styles.text}>
-                    {lang[global.language || 'en'].settings.about}
+                    {text[language].settings.about}
                 </Text>
             </View>
         </View>

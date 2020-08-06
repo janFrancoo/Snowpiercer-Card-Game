@@ -3,10 +3,15 @@ import { StyleSheet, SafeAreaView, View, Text, FlatList, TouchableOpacity, Platf
 import { faHammer, faTrain } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import colors from "../config/colors"
-import lang from "../config/lang"
+import text from "../config/text"
 import people from "../scenerios/people"
+import { useStateValue } from "../helpers/StateProvider"
+import BottomNav from "./BottomNav"
 
 export default function PeopleView({ navigation }) {
+
+    const [{ language, volume, days }, dispatch] = useStateValue();
+    
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.listContainer}>
@@ -22,15 +27,7 @@ export default function PeopleView({ navigation }) {
                 />
             </View>
             <View style={styles.bottomContainer}>
-                <View style={styles.buttonLeft}>
-                    <FontAwesomeIcon icon={ faTrain } size={ 32 } color={colors.white} />
-                </View>
-                <TouchableOpacity style={styles.daysPanel} onPress={() => navigation.navigate("CardGameView")}>
-                    <Text style={styles.textWhite}>{lang[global.language || 'en'].bottomNav.middleButton}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonRight} onPress={() => navigation.navigate("SettingsView")}>
-                    <FontAwesomeIcon icon={ faHammer } size={ 32 } color={colors.white} />
-                </TouchableOpacity>
+                <BottomNav navigation={navigation} />
             </View>
         </SafeAreaView>
     )
@@ -48,8 +45,7 @@ const styles = StyleSheet.create({
     },
     bottomContainer: {
         flex: 0.1,
-        flexDirection: 'row',
-        justifyContent: "space-evenly"
+        justifyContent: "center"
     },
     buttonLeft: {
         width: "25%",
