@@ -19,6 +19,7 @@ export default function App() {
   const initialState = {
     language: 'en',
     music: backgroundMusic,
+    musicStatus: true,
     volume: true,
     days: 0
   }
@@ -33,7 +34,7 @@ export default function App() {
       case 'changeMusicStatus':
         return {
           ...state,
-          music: action.newMusicStatus
+          musicStatus: action.newMusicStatus
         };
       case 'changeVolumeStatus':
         return {

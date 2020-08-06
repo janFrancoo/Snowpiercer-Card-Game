@@ -140,7 +140,7 @@ export default function CardGameView({ navigation }) {
 
     const start = async () => {
         loadAndPlayShuffleSound()
-        
+
         return Animated.timing(slideFromTopLeft, {
             toValue: 1,
             duration: 2000,
@@ -154,17 +154,7 @@ export default function CardGameView({ navigation }) {
         })
     }
 
-    const getSavedData = async () => {
-        const savedDays = await getData("days")
-        if (savedDays !== NaN && parseInt(savedDays) !== 0)
-            dispatch({
-                type: 'changeDays',
-                newDays: parseInt(savedDays)
-            })
-    }
-
     useEffect(() => {
-        getSavedData()
         loadSwipeSound()
         start()
     }, [])

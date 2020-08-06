@@ -7,11 +7,11 @@ import { faMusic, faVolumeUp, faVolumeMute } from '@fortawesome/free-solid-svg-i
 import text from "../config/text"
 import { useStateValue } from "../helpers/StateProvider"
 import BottomNav from "./BottomNav"
+import AsyncStorage from '@react-native-community/async-storage'
 
 export default function SettingsView({ navigation }) {
 
-    const [{ language, music, volume }, dispatch] = useStateValue();
-    const [musicStatus, setMusicStatus] = useState(true);
+    const [{ language, music, musicStatus, volume }, dispatch] = useStateValue();
 
     const startOverAlert = () => {
         Alert.alert(
@@ -30,6 +30,12 @@ export default function SettingsView({ navigation }) {
         console.log("starting over...")
     }
 
+    const storeData = async (key, value) => {
+        try {
+            await AsyncStorage.setItem(key, value)
+        } catch (e) { console.log(e) }
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.settingsContainer}>
@@ -41,10 +47,14 @@ export default function SettingsView({ navigation }) {
                         containerStyle={{width: "80%", height: "100%", backgroundColor: 'transparent' }}
                         valueStyle={{ color: colors.white }}
                         labelStyle={{ color: colors.white }}
-                        onChange={(value) => dispatch({
-                            type: 'changeLang',
-                            newLanguage: value
-                        })}
+                        onChange={(value) => {
+                            storeData("lang", value)
+
+                            dispatch({
+                                type: 'changeLang',
+                                newLanguage: value
+                            })
+                        }}
                     />
                 </View>
                 <View style={styles.soundContainer}>
@@ -56,17 +66,26 @@ export default function SettingsView({ navigation }) {
                             else
                                 music.playAsync()
                             
-                            setMusicStatus(!musicStatus) 
+                            dispatch({
+                                type: 'changeMusicStatus',
+                                newMusicStatus: !musicStatus
+                            })
+
+                            storeData("music", musicStatus ? "true" : "false")
                         }}>
                             <FontAwesomeIcon icon={ faMusic } size={ 32 } color={musicStatus ? colors.white : colors.gray} />
                         </TouchableOpacity>
                     </View>
                     <View style={styles.soundCheck}>
                         <Text style={styles.textWhite}>{text[language].settings.labels.enableSound}</Text>
-                        <TouchableOpacity onPress={() => dispatch({
-                            type: 'changeVolumeStatus',
-                            newVolumeStatus: !volume
-                        })}>
+                        <TouchableOpacity onPress={() => { 
+                            dispatch({
+                                type: 'changeVolumeStatus',
+                                newVolumeStatus: !volume
+                            })
+
+                            storeData("volume", volume ? "true" : "false")
+                        }}>
                             <FontAwesomeIcon icon={ volume ? faVolumeUp : faVolumeMute } size={ 32 } color={colors.white} />
                         </TouchableOpacity>
                     </View>
