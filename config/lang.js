@@ -9,7 +9,8 @@ export default {
                 selectLang: "Select language",
                 enableMusic: "Enable music",
                 enableSound: "Enable sound",
-                startOverBtn: "Start Over"
+                startOverBtn: "Start Over",
+                aboutBtn: "About the App"
             },
             startOver: {
                 title: "Start over",
@@ -17,6 +18,7 @@ export default {
                 cancel: "Cancel",
                 ok: "Ok"
             },
+            about: "This app is a fan made game of Snowpiercer. Contact: poisonweeb@gmail.com"
         },
         bottomNav: {
             day: "Day",
@@ -33,14 +35,16 @@ export default {
                 selectLang: "Dil seç",
                 enableMusic: "Müziği aktifleştir",
                 enableSound: "Sesi aktifleştir",
-                startOverBtn: "Baştan Başla"
+                startOverBtn: "Baştan Başla",
+                aboutBtn: "Uygulama Hakkında"
             },
             startOver: {
                 title: "Baştan başla",
                 message: "Tüm ilerleme sıfırlanacak, emin misin?",
                 cancel: "İptal",
                 ok: "Tamam"
-            }
+            },
+            about: "Bu uygulama Snowpiercer'ın fan yapımı oyunudur. İletişim: poisonweeb@gmail.com"
         },
         bottomNav: {
             day: "Gün",

@@ -60,8 +60,11 @@ export default function SettingsView({ navigation }) {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <TouchableOpacity style={styles.startOverBtn} onPress={() => startOverAlert()}>
+                <TouchableOpacity style={styles.button} onPress={() => startOverAlert()}>
                     <Text syle={styles.textWhite}>{lang[global.language || 'en'].settings.labels.startOverBtn}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("AboutView")}>
+                    <Text syle={styles.textWhite}>{lang[global.language || 'en'].settings.labels.aboutBtn}</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.bottomContainer}>
@@ -111,7 +114,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-evenly"
     },
-    startOverBtn: {
+    button: {
         width: "80%",
         height: "8%",
         marginTop: "5%",

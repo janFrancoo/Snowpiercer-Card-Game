@@ -6,6 +6,7 @@ import PeopleView from "./screens/PeopleView";
 import PersonDetailView from "./screens/PersonDetailView"
 import SettingsView from "./screens/SettingsView";
 import GameOverView from "./screens/GameOverView";
+import AboutView from "./screens/AboutView";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -43,6 +44,7 @@ export default function App() {
         <Stack.Screen name="PersonDetailView" component={PersonDetailView} />
         <Stack.Screen name="SettingsView" component={SettingsView} />
         <Stack.Screen name="GameOverView" component={GameOverView} />
+        <Stack.Screen name="AboutView" component={AboutView} />
       </Stack.Navigator>
     </NavigationContainer>
   );

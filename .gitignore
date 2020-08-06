@@ -9,6 +9,7 @@ npm-debug.*
 *.orig.*
 web-build/
 scenerios/
+assets/
 
 # macOS
 .DS_Store
