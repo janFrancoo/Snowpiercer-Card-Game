@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, Alert, Platform } from 'react-native'
 import colors from "../config/colors"
 import SelectInput from '@tele2/react-native-select-input'
@@ -10,7 +10,8 @@ import BottomNav from "./BottomNav"
 
 export default function SettingsView({ navigation }) {
 
-    const [{ language, music, volume, days }, dispatch] = useStateValue();
+    const [{ language, music, volume }, dispatch] = useStateValue();
+    const [musicStatus, setMusicStatus] = useState(true);
 
     const startOverAlert = () => {
         Alert.alert(
@@ -49,11 +50,15 @@ export default function SettingsView({ navigation }) {
                 <View style={styles.soundContainer}>
                     <View style={styles.musicCheck}>
                         <Text style={styles.textWhite}>{text[language].settings.labels.enableMusic}</Text>
-                        <TouchableOpacity onPress={() => dispatch({
-                            type: 'changeMusicStatus',
-                            newMusicStatus: !music
-                        })}>
-                            <FontAwesomeIcon icon={ faMusic } size={ 32 } color={music ? colors.white : colors.gray} />
+                        <TouchableOpacity onPress={async () => { 
+                            if (musicStatus)
+                                music.stopAsync()
+                            else
+                                music.playAsync()
+                            
+                            setMusicStatus(!musicStatus) 
+                        }}>
+                            <FontAwesomeIcon icon={ faMusic } size={ 32 } color={musicStatus ? colors.white : colors.gray} />
                         </TouchableOpacity>
                     </View>
                     <View style={styles.soundCheck}>

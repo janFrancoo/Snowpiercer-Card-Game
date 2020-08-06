@@ -1,16 +1,13 @@
 import React from 'react'
 import { StyleSheet, SafeAreaView, View, Text, FlatList, TouchableOpacity, Platform } from 'react-native'
-import { faHammer, faTrain } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import colors from "../config/colors"
-import text from "../config/text"
 import people from "../scenerios/people"
 import { useStateValue } from "../helpers/StateProvider"
 import BottomNav from "./BottomNav"
 
 export default function PeopleView({ navigation }) {
 
-    const [{ language, volume, days }, dispatch] = useStateValue();
+    const [{ language }, dispatch] = useStateValue();
     
     return (
         <SafeAreaView style={styles.container}>
@@ -46,28 +43,6 @@ const styles = StyleSheet.create({
     bottomContainer: {
         flex: 0.1,
         justifyContent: "center"
-    },
-    buttonLeft: {
-        width: "25%",
-        justifyContent: "center",
-        alignItems: "center",
-        borderRightColor: colors.white,
-        borderWidth: 1
-    },
-    daysPanel: {
-        width: "50%",
-        justifyContent: "center",
-        alignItems: "center",
-        borderLeftColor: colors.white,
-        borderRightColor: colors.white,
-        borderWidth: 1
-    },
-    buttonRight: {
-        width: "25%",
-        justifyContent: "center",
-        alignItems: "center",
-        borderLeftColor: colors.white,
-        borderWidth: 1
     },
     card: {
         backgroundColor: colors.black,

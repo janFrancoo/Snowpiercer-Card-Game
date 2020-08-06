@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-import React from "react";
+import React, { useRef } from "react";
 import GameLoadingView from "./screens/GameLoadingView";
 import CardGameView from "./screens/CardGameView";
 import PeopleView from "./screens/PeopleView";
@@ -10,12 +10,15 @@ import AboutView from "./screens/AboutView";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { StateProvider } from "./helpers/StateProvider"
+import { Audio } from "expo-av"
 
 export default function App() {
 
+  const backgroundMusic = useRef(new Audio.Sound()).current
+
   const initialState = {
     language: 'en',
-    music: true,
+    music: backgroundMusic,
     volume: true,
     days: 0
   }

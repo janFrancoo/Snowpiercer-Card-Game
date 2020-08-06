@@ -9,22 +9,32 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import AsyncStorage from '@react-native-community/async-storage'
 import { useStateValue } from "../helpers/StateProvider"
 import BottomNav from "./BottomNav"
+import { Audio } from "expo-av"
 
 export default function CardGameView({ navigation }) {
     console.disableYellowBox = true;
     const { width, height} = Dimensions.get('window');
+
+    const soundEffectCardSwipe = useRef(new Audio.Sound()).current
+    const soundEffectCardShuffle = useRef(new Audio.Sound()).current
+    const [{ language, music, volume, days }, dispatch] = useStateValue();
     
     const [index, setIndex] = React.useState(0)
     const [p1, setP1] = React.useState(0.5)
     const [p2, setP2] = React.useState(0.5)
     const [p3, setP3] = React.useState(0.5)
     const [p4, setP4] = React.useState(0.5)
-    const [{ language, music, volume, days }, dispatch] = useStateValue();
 
     const slideFromTopLeft = useRef(new Animated.Value(0)).current
     const [finished, setFinished] = React.useState(false)
 
     const onSwiped = (idx, direction) => {
+        if (volume) {
+            try {
+                soundEffectCardSwipe.replayAsync()
+            } catch (err) { console.log(err) }
+        }
+
         setP1(p1 + scenerios[language][idx].onSwiped[direction].p1)
         setP2(p2 + scenerios[language][idx].onSwiped[direction].p2)
         setP3(p3 + scenerios[language][idx].onSwiped[direction].p3)
@@ -50,7 +60,7 @@ export default function CardGameView({ navigation }) {
         else if (days > parseInt(highScore))
             storeData("high_score", days.toString())
         
-        checkFullOrEmpty()
+        // checkFullOrEmpty()
     }
 
     const checkFullOrEmpty = () => {
@@ -114,12 +124,34 @@ export default function CardGameView({ navigation }) {
         );
     }
 
-    const start = () => {
+    const loadSwipeSound = async () => {
+        try {
+            await soundEffectCardSwipe.loadAsync(require("../assets/sound/effect/swipe_sound.mp3"))
+        } catch(err) { console.log(err) }
+    }
+
+    const loadAndPlayShuffleSound = async () => {
+        try {
+            await soundEffectCardShuffle.loadAsync(require("../assets/sound/effect/card_deck_sound.mp3"))
+            if (volume)
+                await soundEffectCardShuffle.playAsync()
+        } catch(err) { console.log(err) }
+    }
+
+    const start = async () => {
+        loadAndPlayShuffleSound()
+        
         return Animated.timing(slideFromTopLeft, {
             toValue: 1,
             duration: 2000,
             useNativeDriver: true
-        }).start(() => setFinished(true))
+        }).start(async () => {
+            setFinished(true)
+            try {
+                await music.loadAsync(require("../assets/sound/music/background_music.mp3"), { isLooping: true })
+                await music.playAsync()
+            } catch(err) { console.log(err) }
+        })
     }
 
     const getSavedData = async () => {
@@ -132,8 +164,9 @@ export default function CardGameView({ navigation }) {
     }
 
     useEffect(() => {
-        start()
         getSavedData()
+        loadSwipeSound()
+        start()
     }, [])
 
     return (
