@@ -71,7 +71,7 @@ export default function SettingsView({ navigation }) {
                                 newMusicStatus: !musicStatus
                             })
 
-                            storeData("music", musicStatus ? "true" : "false")
+                            storeData("music", !musicStatus ? "true" : "false")
                         }}>
                             <FontAwesomeIcon icon={ faMusic } size={ 32 } color={musicStatus ? colors.white : colors.gray} />
                         </TouchableOpacity>
@@ -84,7 +84,7 @@ export default function SettingsView({ navigation }) {
                                 newVolumeStatus: !volume
                             })
 
-                            storeData("volume", volume ? "true" : "false")
+                            storeData("volume", !volume ? "true" : "false")
                         }}>
                             <FontAwesomeIcon icon={ volume ? faVolumeUp : faVolumeMute } size={ 32 } color={colors.white} />
                         </TouchableOpacity>

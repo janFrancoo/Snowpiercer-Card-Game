@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, SafeAreaView, View, Text, FlatList, TouchableOpacity, Platform } from 'react-native'
+import { StyleSheet, SafeAreaView, View, Text, Image, FlatList, TouchableOpacity, Platform } from 'react-native'
 import colors from "../config/colors"
 import people from "../scenerios/people"
 import { useStateValue } from "../helpers/StateProvider"
@@ -15,12 +15,14 @@ export default function PeopleView({ navigation }) {
                 <FlatList
                     data={people}
                     renderItem={({ item }) => (
-                        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("PersonDetailView", { person: item })}>
-                            <Text style={styles.textWhite}>{item.title}</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("PersonDetailView", { person: item })}>
+                            <View style={styles.card}>
+                                <Text style={styles.textWhite}>{item.title}</Text>
+                            </View>
                         </TouchableOpacity>
                     )}
                     keyExtractor={card => card.id}
-                    numColumns={2}
+                    showsVerticalScrollIndicator={false}
                 />
             </View>
             <View style={styles.bottomContainer}>
@@ -34,11 +36,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.black,
-        paddingTop: Platform.OS === 'android' ? 25 : 0
+        paddingTop: Platform.OS === 'android' ? 25 : 0,
     },
     listContainer: {
         flex: 0.9,
-        backgroundColor: colors.white
+        backgroundColor: colors.white,
+        alignItems: "center"
     },
     bottomContainer: {
         flex: 0.1,
@@ -46,12 +49,19 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: colors.black,
-        width: "40%",
-        padding: 20,
+        paddingHorizontal: "25%",
+        paddingVertical: "10%",
         marginVertical: "5%",
-        marginHorizontal: "5%",
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        borderRadius: 12
+    },
+    avatar: {
+        top: 10,
+        start: 10,
+        position: "absolute",
+        width: "50%",
+        height: "10%"
     },
     textWhite: {
         color: colors.white,

@@ -17,7 +17,7 @@ export default function CardGameView({ navigation }) {
 
     const soundEffectCardSwipe = useRef(new Audio.Sound()).current
     const soundEffectCardShuffle = useRef(new Audio.Sound()).current
-    const [{ language, music, volume, days }, dispatch] = useStateValue();
+    const [{ language, music, musicStatus, volume, days }, dispatch] = useStateValue();
     
     const [index, setIndex] = React.useState(0)
     const [p1, setP1] = React.useState(0.5)
@@ -53,6 +53,10 @@ export default function CardGameView({ navigation }) {
             })
         
         storeData("days", days.toString())
+        storeData("p1", p1.toString())
+        storeData("p2", p2.toString())
+        storeData("p3", p3.toString())
+        storeData("p4", p4.toString())
 
         const highScore = getData("high_score")
         if (highScore === null)
@@ -60,7 +64,7 @@ export default function CardGameView({ navigation }) {
         else if (days > parseInt(highScore))
             storeData("high_score", days.toString())
         
-        // checkFullOrEmpty()
+        checkFullOrEmpty()
     }
 
     const checkFullOrEmpty = () => {
@@ -124,6 +128,24 @@ export default function CardGameView({ navigation }) {
         );
     }
 
+    const loadProgress = async() => {
+        const savedP1 = await getData("p1")
+        if (savedP1 !== null)
+            setP1(parseFloat(savedP1))
+        
+        const savedP2 = await getData("p2")
+        if (savedP2 !== null)
+            setP2(parseFloat(savedP2))
+        
+        const savedP3 = await getData("p3")
+        if (savedP3 !== null)
+            setP3(parseFloat(savedP3))
+        
+        const savedP4 = await getData("p4")
+        if (savedP4 !== null)
+            setP4(parseFloat(savedP4))
+    }
+
     const loadSwipeSound = async () => {
         try {
             await soundEffectCardSwipe.loadAsync(require("../assets/sound/effect/swipe_sound.mp3"))
@@ -147,14 +169,17 @@ export default function CardGameView({ navigation }) {
             useNativeDriver: true
         }).start(async () => {
             setFinished(true)
-            try {
-                await music.loadAsync(require("../assets/sound/music/background_music.mp3"), { isLooping: true })
-                await music.playAsync()
-            } catch(err) { console.log(err) }
+            if (musicStatus) {
+                try {
+                    await music.loadAsync(require("../assets/sound/music/background_music.mp3"), { isLooping: true })
+                    await music.playAsync()
+                } catch(err) { console.log(err) }
+            }
         })
     }
 
     useEffect(() => {
+        loadProgress()
         loadSwipeSound()
         start()
     }, [])
