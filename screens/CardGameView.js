@@ -72,13 +72,21 @@ export default function CardGameView({ navigation }) {
 
         progresses.forEach((p, idx) => {
             if (p >= 1) {
-                storeData("days", "0")
+                resetProgress()
                 navigation.replace("GameOverView", { e: { p: idx, q: "full" }})
             } else if (p <= 0) {
-                storeData("days", "0")
+                resetProgress()
                 navigation.replace("GameOverView", { e: { p: idx, q: "empty" } })
             }
         })
+    }
+
+    const resetProgress = () => {
+        storeData("days", "0")
+        storeData("p1", "0.5")
+        storeData("p2", "0.5")
+        storeData("p3", "0.5")
+        storeData("p4", "0.5")
     }
 
     const getData = async (key) => {

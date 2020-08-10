@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, Alert, Platform } from 'react-native'
+import React from 'react'
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, Alert, Image, Platform, Linking } from 'react-native'
 import colors from "../config/colors"
 import SelectInput from '@tele2/react-native-select-input'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faMusic, faVolumeUp, faVolumeMute } from '@fortawesome/free-solid-svg-icons'
+import { faMusic, faVolumeUp, faVolumeMute, faLanguage, faGamepad } from '@fortawesome/free-solid-svg-icons'
 import text from "../config/text"
 import { useStateValue } from "../helpers/StateProvider"
 import BottomNav from "./BottomNav"
@@ -38,63 +38,100 @@ export default function SettingsView({ navigation }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.settingsContainer}>
-                <Text style={styles.labels}>{text[language].settings.labels.selectLang}</Text>
-                <View style={styles.pickerContainer}>
-                    <SelectInput
-                        options={[{ value: 'en', label: 'English' }, { value: 'tr', label: 'Türkçe' }]}
-                        value={language}
-                        containerStyle={{width: "80%", height: "100%", backgroundColor: 'transparent' }}
-                        valueStyle={{ color: colors.white }}
-                        labelStyle={{ color: colors.white }}
-                        onChange={(value) => {
-                            storeData("lang", value)
-
-                            dispatch({
-                                type: 'changeLang',
-                                newLanguage: value
-                            })
-                        }}
-                    />
-                </View>
-                <View style={styles.soundContainer}>
-                    <View style={styles.musicCheck}>
-                        <Text style={styles.textWhite}>{text[language].settings.labels.enableMusic}</Text>
-                        <TouchableOpacity onPress={async () => { 
-                            if (musicStatus)
-                                music.stopAsync()
-                            else
-                                music.playAsync()
-                            
-                            dispatch({
-                                type: 'changeMusicStatus',
-                                newMusicStatus: !musicStatus
-                            })
-
-                            storeData("music", !musicStatus ? "true" : "false")
-                        }}>
-                            <FontAwesomeIcon icon={ faMusic } size={ 32 } color={musicStatus ? colors.white : colors.gray} />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.soundCheck}>
-                        <Text style={styles.textWhite}>{text[language].settings.labels.enableSound}</Text>
-                        <TouchableOpacity onPress={() => { 
-                            dispatch({
-                                type: 'changeVolumeStatus',
-                                newVolumeStatus: !volume
-                            })
-
-                            storeData("volume", !volume ? "true" : "false")
-                        }}>
-                            <FontAwesomeIcon icon={ volume ? faVolumeUp : faVolumeMute } size={ 32 } color={colors.white} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <TouchableOpacity style={styles.button} onPress={() => startOverAlert()}>
-                    <Text syle={styles.textWhite}>{text[language].settings.labels.startOverBtn}</Text>
+            <View style={styles.headerContainer}>
+                <TouchableOpacity style={styles.goBackBtn} onPress={() => navigation.goBack(null)}>
+                    <Image style={styles.goBackImage} source={require("../assets/icon.png")}/>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("AboutView")}>
-                    <Text syle={styles.textWhite}>{text[language].settings.labels.aboutBtn}</Text>
+                <Text style={styles.titleText}>{text[language].settings.labels.settings}</Text>
+            </View>
+            <View style={styles.settingsContainer}>     
+                <View style={styles.settingsItem}>
+                    <TouchableOpacity style={styles.settingsItemTouchable} onPress={async () => { 
+                        musicStatus ? music.stopAsync() : music.playAsync()
+                        
+                        dispatch({
+                            type: 'changeMusicStatus',
+                            newMusicStatus: !musicStatus
+                        })
+
+                        storeData("music", !musicStatus ? "true" : "false")
+                    }}>
+                        <FontAwesomeIcon icon={ faMusic } size={ 32 } color={musicStatus ? colors.black : colors.gray} />
+                        <View style={styles.settingsText}>
+                            <Text style={styles.settingsItemTitle}>{text[language].settings.labels.music}</Text>
+                            <Text>{musicStatus ? text[language].settings.labels.enabled : text[language].settings.labels.disabled}</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.settingsItem}>
+                    <TouchableOpacity style={styles.settingsItemTouchable} onPress={() => {
+                        dispatch({
+                            type: 'changeVolumeStatus',
+                            newVolumeStatus: !volume
+                        })
+
+                        storeData("volume", !volume ? "true" : "false")
+                    }}>
+                        <FontAwesomeIcon icon={ volume ? faVolumeUp : faVolumeMute } size={ 32 } color={colors.black} />
+                        <View style={styles.settingsText}>
+                            <Text style={styles.settingsItemTitle}>{text[language].settings.labels.sound}</Text>
+                            <Text>{volume ? text[language].settings.labels.enabled : text[language].settings.labels.disabled}</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <View style={[styles.settingsItem, {flexDirection: "row", height: 85, borderBottomColor: colors.black }]}>
+                    <FontAwesomeIcon icon={ faLanguage } size={ 32 } color={colors.black} />
+                    <View style={styles.settingsText}>
+                        <Text style={styles.settingsItemTitle}>{text[language].settings.labels.language}</Text>
+                        <SelectInput
+                            options={[{ value: 'en', label: 'English' }, { value: 'tr', label: 'Türkçe' }]}
+                            value={language}
+                            containerStyle={{width: "90%", backgroundColor: 'transparent' }}
+                            innerContainerStyle={{borderBottomWidth: 0}}
+                            valueStyle={{ color: colors.black }}
+                            labelStyle={{ color: colors.black }}
+                            onChange={(value) => {
+                                storeData("lang", value)
+
+                                dispatch({
+                                    type: 'changeLang',
+                                    newLanguage: value
+                                })
+                            }}
+                        />
+                    </View>
+                </View>
+                <View style={[styles.settingsItem, {flexDirection: "row", height: 85, borderBottomColor: colors.black }]}>
+                    <View style={[styles.settingsText, { flex: 0.75 }]}>
+                        <Text style={styles.settingsItemTitle}>{text[language].settings.labels.startOver}</Text>
+                        <Text>{text[language].settings.labels.startOverText}</Text>
+                    </View>
+                    <TouchableOpacity style={{justifyContent: "center", flex: 0.25}} onPress={() => startOverAlert()}>
+                        <View style={styles.button}>
+                            <Text style={styles.buttonText}>{text[language].settings.labels.startOverBtn}</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <View style={[styles.settingsItem, {flexDirection: "row", height: 85, borderBottomColor: colors.black }]}>
+                    <FontAwesomeIcon icon={ faGamepad } size={ 32 } color={colors.black} />
+                    <View style={[styles.settingsText, { flex: 0.75 }]}>
+                        <Text style={styles.settingsItemTitle}>{text[language].settings.labels.moreGames}</Text>
+                        <Text>{text[language].settings.labels.moreGamesText}</Text>
+                    </View>
+                    <TouchableOpacity style={{justifyContent: "center", flex: 0.25}} 
+                        onPress={() => Linking.openURL("market://details?id=com.janfranco.snowpiercer")}
+                    >
+                        <View style={styles.button}>
+                            <Text style={styles.buttonText}>{text[language].settings.labels.moreGamesBtn}</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <TouchableOpacity style={{justifyContent: "center", height: 70, width: "80%"}} 
+                    onPress={() => navigation.navigate("AboutView")}
+                >
+                    <View style={styles.button}>
+                        <Text style={styles.buttonText}>{text[language].settings.labels.about}</Text>
+                    </View>
                 </TouchableOpacity>
             </View>
             <View style={styles.bottomContainer}>
@@ -107,12 +144,33 @@ export default function SettingsView({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.black,
+        backgroundColor: "transparent",
         paddingTop: Platform.OS === 'android' ? 25 : 0
     },
+    headerContainer: {
+        flex: 0.05,
+        backgroundColor: colors.black
+    },
     settingsContainer: {
-        flex: 0.9,
-        marginTop: "10%"
+        flex: 0.85,
+        backgroundColor: colors.white,
+        alignItems: "center",
+        paddingTop: "5%"
+    },
+    settingsItem: {
+        width: "80%",
+        paddingVertical: "3%",
+        borderBottomWidth: 1,
+        borderBottomColor: colors.grayOpacity
+    },
+    settingsItemTouchable: {
+        flexDirection: "row"
+    },
+    settingsText: {
+        marginLeft: "5%"
+    },
+    settingsItemTitle: {
+        fontSize: 18
     },
     pickerContainer: {
         alignItems: "center",
@@ -120,41 +178,36 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 85
     },
-    soundContainer: {
-        width: "100%",
-        height: 150,
-        marginTop: "5%",
-        flexDirection: 'row'
-    },
-    musicCheck: {
-        flex: 0.5,
-        alignItems: "center",
-        justifyContent: "space-evenly"
-    },
-    soundCheck: {
-        flex: 0.5,
-        alignItems: "center",
-        justifyContent: "space-evenly"
-    },
-    button: {
-        width: "80%",
-        height: "8%",
-        marginTop: "5%",
-        backgroundColor: colors.white,
-        alignSelf: "center",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 10
-    },
     bottomContainer: {
         flex: 0.1,
         justifyContent: "center"
     },
-    labels: {
-        marginLeft: "10%",
-        color: colors.white
+    titleText: {
+        color: colors.white,
+        alignSelf: "center",
+        fontWeight: "bold",
+        fontSize: 20
     },
-    textWhite: {
-        color: colors.white
+    goBackBtn: {
+        position: "absolute",
+        top: -5,
+        left: 15,
+        borderColor: "red",
+        borderWidth: 2
+    },
+    goBackImage: {
+        width: 40,
+        height: 25
+    },
+    button: {
+        backgroundColor: colors.black,
+        height: "60%",
+        borderRadius: 12,
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    buttonText: {
+        color: colors.white,
+        fontSize: 14,
     }
 })

@@ -15,10 +15,14 @@ export default function PeopleView({ navigation }) {
                 <FlatList
                     data={people}
                     renderItem={({ item }) => (
-                        <TouchableOpacity onPress={() => navigation.navigate("PersonDetailView", { person: item })}>
+                        <TouchableOpacity style={styles.listItem} 
+                                        onPress={() => navigation.navigate("PersonDetailView", { person: item })}>
                             <View style={styles.card}>
-                                <Text style={styles.textWhite}>{item.title}</Text>
+                                <Text style={styles.textTitle}>{item.title}</Text>
+                                <Text style={styles.textSecondary}>{item.title}</Text>
+                                <Image style={styles.badge} source={require("../assets/icon.png")}/>
                             </View>
+                            <Image style={styles.avatar} source={require("../assets/icon.png")}/>
                         </TouchableOpacity>
                     )}
                     keyExtractor={card => card.id}
@@ -47,24 +51,41 @@ const styles = StyleSheet.create({
         flex: 0.1,
         justifyContent: "center"
     },
+    listItem: {
+        width: 340,
+        height: 125,
+        marginVertical: 15
+    },
     card: {
         backgroundColor: colors.black,
-        paddingHorizontal: "25%",
-        paddingVertical: "10%",
-        marginVertical: "5%",
-        alignItems: "center",
-        justifyContent: "center",
+        height: "75%",
         borderRadius: 12
     },
     avatar: {
-        top: 10,
-        start: 10,
         position: "absolute",
-        width: "50%",
-        height: "10%"
+        width: "25%",
+        height: "100%",
+        borderRadius: 12
     },
-    textWhite: {
+    textTitle: {
+        marginLeft: "27%",
+        marginTop: 15,
         color: colors.white,
-        fontSize: 17
+        fontSize: 19,
+        fontWeight: "bold"
     },
+    textSecondary: {
+        marginLeft: "27%",
+        marginTop: 5,
+        color: colors.white,
+        fontSize: 14
+    },
+    badge: {
+        width: "15%",
+        height: "50%",
+        alignSelf: "flex-end",
+        position: "absolute",
+        top: "25%",
+        right: "5%"
+    }
 })

@@ -27,8 +27,10 @@ export default function BottomNav({ navigation }) {
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'row',
-        justifyContent: "space-evenly"
+        flex: 1,
+        flexDirection: "row",
+        backgroundColor: colors.black,
+        paddingVertical: "4%"
     },
     buttonLeft: {
         width: "25%",

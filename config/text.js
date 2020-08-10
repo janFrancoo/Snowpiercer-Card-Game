@@ -6,11 +6,19 @@ export default {
         },
         settings: {
             labels: {
-                selectLang: "Select language",
-                enableMusic: "Enable music",
-                enableSound: "Enable sound",
-                startOverBtn: "Start Over",
-                aboutBtn: "About the App"
+                settings: "Settings",
+                language: "Language",
+                music: "Music",
+                sound: "Game sounds",
+                enabled: "Opened",
+                disabled: "Closed",
+                startOver: "Start over the game",
+                startOverText: "All progress will be deleted for starting over",
+                startOverBtn: "Start over",
+                about: "Privacy, License and About the App",
+                moreGames: "More games",
+                moreGamesText: "You can download our other free games to support us <3",
+                moreGamesBtn: "Store"
             },
             startOver: {
                 title: "Start over",
@@ -32,11 +40,19 @@ export default {
         },
         settings: {
             labels: {
-                selectLang: "Dil seç",
-                enableMusic: "Müziği aktifleştir",
-                enableSound: "Sesi aktifleştir",
-                startOverBtn: "Baştan Başla",
-                aboutBtn: "Uygulama Hakkında"
+                settings: "Ayarlar",
+                language: "Dil",
+                music: "Müzik",
+                sound: "Oyun sesleri",
+                enabled: "Açık",
+                disabled: "Kapalı",
+                startOver: "Oyunu sıfırla",
+                startOverText: "Sıfırdan başlamak için tüm veriler silinecektir",
+                startOverBtn: "Sıfırla",
+                about: "Gizlilik, Lisans ve Uygulama Hakkında",
+                moreGames: "Daha fazla oyun",
+                moreGamesText: "Bize destek olmak için daha fazla ücretsiz oyunumuzu indirebilirsin <3",
+                moreGamesBtn: "Market"
             },
             startOver: {
                 title: "Baştan başla",
