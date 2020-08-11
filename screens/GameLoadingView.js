@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, Animated } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
+import { StyleSheet, Text, View, TouchableOpacity, Image, Animated } from 'react-native'
 import colors from "../config/colors"
 import text from "../config/text"
 import { useStateValue } from "../helpers/StateProvider"
@@ -9,6 +9,7 @@ import { Audio } from "expo-av"
 export default function GameLoadingView({ navigation }) {
 
     const [{ language }, dispatch] = useStateValue();
+    const [disableButton, setDisable] = useState(true);
 
     const getSettings = async () => {
         const savedDays = await getData("days")
@@ -47,27 +48,35 @@ export default function GameLoadingView({ navigation }) {
     }
 
     const fade = useRef(new Animated.Value(0)).current
+    const buttonFade = useRef(new Animated.Value(0)).current
     const growHorizontal = useRef(new Animated.Value(0)).current
     const growVertical = useRef(new Animated.Value(0)).current
 
     const trainLoadAnimation = () => {
-        Animated.parallel([
-            Animated.timing(fade, {
+        Animated.sequence([
+            Animated.parallel([
+                Animated.timing(fade, {
+                    toValue: 1,
+                    duration: 8000 ,
+                    useNativeDriver: false
+                }),
+                Animated.timing(growHorizontal, {
+                    toValue: 1,
+                    duration: 8000,
+                    useNativeDriver: false
+                }),
+                Animated.timing(growVertical, {
+                    toValue: 1,
+                    duration: 8000,
+                    useNativeDriver: false
+                })
+            ]),
+            Animated.timing(buttonFade, {
                 toValue: 1,
-                duration: 5000,
-                useNativeDriver: false
-            }),
-            Animated.timing(growHorizontal, {
-                toValue: 1,
-                duration: 5000,
-                useNativeDriver: false
-            }),
-            Animated.timing(growVertical, {
-                toValue: 1,
-                duration: 5000,
+                duration: 2000,
                 useNativeDriver: false
             })
-        ]).start()
+        ]).start(() => setDisable(false));
     };
 
     const soundEffectTrainComing = useRef(new Audio.Sound()).current
@@ -92,21 +101,21 @@ export default function GameLoadingView({ navigation }) {
                     opacity: fade, 
                     width: growHorizontal.interpolate({
                         inputRange: [0, 1],
-                        outputRange: ['70%', '100%']
+                        outputRange: ['60%', '120%']
                     }),
                     height: growVertical.interpolate({
                         inputRange: [0, 1],
-                        outputRange: ['50%', '80%']
+                        outputRange: ['40%', '120%']
                     }) 
                 }]}>
-                    <Text style={styles.textWhite}>{text[language].loadingScreen.loadingText}</Text>
+                    <Image source={require("../assets/images/train_loading.png")} style={styles.loadingImage} resizeMode={"center"} />
                 </Animated.View>
             </View>
-            <View style={styles.bottomContainer}>
-                <TouchableOpacity style={styles.nextButton} onPress={() => navigation.replace("CardGameView")}>
-                    <Text style={styles.textBlack}>{text[language].loadingScreen.buttonText}</Text>
+            <Animated.View style={[styles.bottomContainer, { opacity: buttonFade }]}>
+                <TouchableOpacity style={styles.nextButton} onPress={() => navigation.replace("CardGameView")} disabled={disableButton}>
+                    <Text style={styles.buttonText}>{text[language].loadingScreen.buttonText}</Text>
                 </TouchableOpacity>
-            </View>
+            </Animated.View>
         </View>
     )
 }
@@ -142,10 +151,12 @@ const styles = StyleSheet.create({
         backgroundColor: colors.white,
         borderRadius: 10
     },
-    textWhite: {
-        color: colors.white
+    buttonText: {
+        color: colors.black,
+        fontSize: 20
     },
-    textBlack: {
-        color: colors.black
-    },
+    loadingImage: {
+        width: "100%",
+        height: "100%"
+    }
 })

@@ -1,7 +1,6 @@
 export default {
     en: {
         loadingScreen:{
-            loadingText: "Hello, Snowpiercer!",
             buttonText: "Start"
         },
         settings: {
@@ -35,7 +34,6 @@ export default {
     },
     tr: {
         loadingScreen:{
-            loadingText: "Merhaba, Snowpiercer!",
             buttonText: "Başla"
         },
         settings: {
