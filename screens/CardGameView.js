@@ -1,9 +1,9 @@
 import React, { useRef, useEffect } from "react";
-import { StyleSheet, View, Text, Dimensions, Animated } from "react-native";
+import { StyleSheet, View, Text, Dimensions, Image, Animated } from "react-native";
 import Swiper from "react-native-deck-swiper";
 import scenerios from "../scenerios/scenerios"
 import colors from "../config/colors"
-import ProgressBar from 'react-native-progress/Bar'
+import MaskedView from '@react-native-community/masked-view'
 import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import AsyncStorage from '@react-native-community/async-storage'
@@ -26,13 +26,17 @@ export default function CardGameView({ navigation }) {
     const [p4, setP4] = React.useState(0.5)
 
     const slideFromTopLeft = useRef(new Animated.Value(0)).current
+    const p1bar = useRef(new Animated.Value(0.5)).current
+    const p2bar = useRef(new Animated.Value(0.5)).current
+    const p3bar = useRef(new Animated.Value(0.5)).current
+    const p4bar = useRef(new Animated.Value(0.5)).current
     const [finished, setFinished] = React.useState(false)
 
     const onSwiped = (idx, direction) => {
         if (volume) {
             try {
                 soundEffectCardSwipe.replayAsync()
-            } catch (err) { console.log(err) }
+            } catch (err) { }
         }
 
         setP1(p1 + scenerios[language][idx].onSwiped[direction].p1)
@@ -40,6 +44,29 @@ export default function CardGameView({ navigation }) {
         setP3(p3 + scenerios[language][idx].onSwiped[direction].p3)
         setP4(p4 + scenerios[language][idx].onSwiped[direction].p4)
         setIndex((index + 1) % scenerios[language].length)
+
+        Animated.parallel([
+            Animated.timing(p1bar, {
+                toValue: p1 + scenerios[language][idx].onSwiped[direction].p1,
+                duration: 500,
+                useNativeDriver: false
+            }),
+            Animated.timing(p2bar, {
+                toValue: p2 + scenerios[language][idx].onSwiped[direction].p2,
+                duration: 500,
+                useNativeDriver: false
+            }),
+            Animated.timing(p3bar, {
+                toValue: p3 + scenerios[language][idx].onSwiped[direction].p3,
+                duration: 500,
+                useNativeDriver: false
+            }),
+            Animated.timing(p4bar, {
+                toValue: p4 + scenerios[language][idx].onSwiped[direction].p4,
+                duration: 500,
+                useNativeDriver: false
+            })
+        ]).start()
 
         if (scenerios[language][idx].days !== "random")
             dispatch({
@@ -92,13 +119,13 @@ export default function CardGameView({ navigation }) {
     const getData = async (key) => {
         try {
             return await AsyncStorage.getItem(key)
-        } catch(e) { console.log(e) }
+        } catch(e) { }
     }
 
     const storeData = async (key, value) => {
         try {
             await AsyncStorage.setItem(key, value)
-        } catch (e) { console.log(e) }
+        } catch (e) { }
     }
 
     const Card = ({ card }) => {
@@ -138,26 +165,34 @@ export default function CardGameView({ navigation }) {
 
     const loadProgress = async() => {
         const savedP1 = await getData("p1")
-        if (savedP1 !== null)
+        if (savedP1 !== null) {
             setP1(parseFloat(savedP1))
+            p1bar.setValue(parseFloat(savedP1))
+        }
         
         const savedP2 = await getData("p2")
-        if (savedP2 !== null)
-            setP2(parseFloat(savedP2))
+        if (savedP2 !== null) {
+            setP1(parseFloat(savedP2))
+            p2bar.setValue(parseFloat(savedP2))
+        }
         
         const savedP3 = await getData("p3")
-        if (savedP3 !== null)
+        if (savedP1 !== null) {
             setP3(parseFloat(savedP3))
+            p3bar.setValue(parseFloat(savedP3))
+        }
         
         const savedP4 = await getData("p4")
-        if (savedP4 !== null)
-            setP4(parseFloat(savedP4))
+        if (savedP4 !== null) {
+            setP1(parseFloat(savedP4))
+            p4bar.setValue(parseFloat(savedP4))
+        }
     }
 
     const loadSwipeSound = async () => {
         try {
             await soundEffectCardSwipe.loadAsync(require("../assets/sound/effect/swipe_sound.mp3"))
-        } catch(err) { console.log(err) }
+        } catch(err) { }
     }
 
     const loadAndPlayShuffleSound = async () => {
@@ -165,7 +200,7 @@ export default function CardGameView({ navigation }) {
             await soundEffectCardShuffle.loadAsync(require("../assets/sound/effect/card_deck_sound.mp3"))
             if (volume)
                 await soundEffectCardShuffle.playAsync()
-        } catch(err) { console.log(err) }
+        } catch(err) { }
     }
 
     const start = async () => {
@@ -181,7 +216,7 @@ export default function CardGameView({ navigation }) {
                 try {
                     await music.loadAsync(require("../assets/sound/music/background_music.mp3"), { isLooping: true })
                     await music.playAsync()
-                } catch(err) { console.log(err) }
+                } catch(err) { }
             }
         })
     }
@@ -195,46 +230,50 @@ export default function CardGameView({ navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.topContainer}>
-                <View style={styles.progressContainer}>
-                    <ProgressBar 
-                        style={styles.progressBar} 
-                        width={height * 8 / 100} 
-                        height={8}
-                        borderRadius={15}
-                        color={colors.white}
-                        progress={p1}
-                    />
-                </View>
-                <View style={styles.progressContainer}>
-                    <ProgressBar 
-                        style={styles.progressBar} 
-                        width={height * 8 / 100} 
-                        height={8}
-                        borderRadius={15}
-                        color={colors.white}
-                        progress={p2}
-                    />
-                </View>
-                <View style={styles.progressContainer}>
-                    <ProgressBar 
-                        style={styles.progressBar} 
-                        width={height * 8 / 100} 
-                        height={8}
-                        borderRadius={15}
-                        color={colors.white}
-                        progress={p3}
-                    />
-                </View>
-                <View style={styles.progressContainer}>
-                    <ProgressBar 
-                        style={styles.progressBar} 
-                        width={height * 8 / 100} 
-                        height={8}
-                        borderRadius={15}
-                        color={colors.white}
-                        progress={p4}
-                    />
-                </View>
+                <MaskedView style={styles.maskedView} maskElement={
+                    <View style={styles.progressImageContainer}>
+                        <Image style={styles.progressImage} source={require("../assets/images/progress/energy.png")} />
+                    </View>
+                }>
+                    <Image style={[styles.progressImage, { position: "absolute" }]} source={require("../assets/images/progress/energy.png")} />
+                    <Animated.View style={[styles.mask, { height: p1bar.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ["45%", "82%"]
+                    }) }]} />
+                </MaskedView>
+                <MaskedView style={styles.maskedView} maskElement={
+                    <View style={styles.progressImageContainer}>
+                        <Image style={styles.progressImage} source={require("../assets/images/progress/food.png")} />
+                    </View>
+                }>
+                    <Image style={[styles.progressImage, { position: "absolute" }]} source={require("../assets/images/progress/food.png")} />
+                    <Animated.View style={[styles.mask, { height: p2bar.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ["50%", "76%"]
+                    }) }]} />
+                </MaskedView>
+                <MaskedView style={styles.maskedView} maskElement={
+                    <View style={styles.progressImageContainer}>
+                        <Image style={styles.progressImage} source={require("../assets/images/progress/forces.png")} />
+                    </View>
+                }>
+                    <Image style={[styles.progressImage, { position: "absolute" }]} source={require("../assets/images/progress/forces.png")} />
+                    <Animated.View style={[styles.mask, { height: p3bar.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ["45%", "85%"]
+                    }) }]} />
+                </MaskedView>
+                <MaskedView style={styles.maskedView} maskElement={
+                    <View style={styles.progressImageContainer}>
+                        <Image style={styles.progressImage} source={require("../assets/images/progress/classes.png")} />
+                    </View>
+                }>
+                    <Image style={[styles.progressImage, { position: "absolute" }]} source={require("../assets/images/progress/classes.png")} />
+                    <Animated.View style={[styles.mask, { height: p4bar.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ["45%", "80%"]
+                    }) }]} />
+                </MaskedView>
             </View>
             <View style={styles.swiperContainer}>
                 { finished && <Swiper
@@ -326,7 +365,10 @@ const styles = StyleSheet.create({
     },
     topContainer: {
         flex: 0.20,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        justifyContent: "center",
+        alignItems: "center",
+        paddingTop: "5%"
     },
     bottomContainer: {
         flex: 0.10,
@@ -341,12 +383,22 @@ const styles = StyleSheet.create({
         marginTop: 20,
         fontSize: 16
     },
-    progressContainer: {
-        flex: 0.25,
-        alignItems: "center",
-        justifyContent: "center"
+    maskedView: { 
+        flex: 1, 
+        flexDirection: 'row', 
+        height: '100%'
     },
-    progressBar: {
-        transform: [{ rotate: '270deg'}],
+    progressImageContainer: {
+        backgroundColor: 'transparent',
+        flex: 1
+    },
+    progressImage: { 
+        width: "100%", 
+        height: "75%" 
+    },
+    mask: { 
+        flex: 1,
+        backgroundColor: colors.white,
+        alignSelf: "flex-end"
     }
 });
