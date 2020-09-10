@@ -7,7 +7,7 @@ import { faMusic, faVolumeUp, faVolumeMute, faLanguage, faGamepad } from '@forta
 import text from "../config/text"
 import { useStateValue } from "../helpers/StateProvider"
 import BottomNav from "./BottomNav"
-import AsyncStorage from '@react-native-community/async-storage'
+import { storeData } from "../helpers/storage_helper"
 
 export default function SettingsView({ navigation }) {
 
@@ -28,12 +28,6 @@ export default function SettingsView({ navigation }) {
 
     const startOver = () => {
         console.log("starting over...")
-    }
-
-    const storeData = async (key, value) => {
-        try {
-            await AsyncStorage.setItem(key, value)
-        } catch (e) { console.log(e) }
     }
 
     return (

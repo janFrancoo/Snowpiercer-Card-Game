@@ -3,6 +3,9 @@ export default {
         loadingScreen:{
             buttonText: "Start"
         },
+        splashScreen: {
+            buttonText: "Next"
+        },
         settings: {
             labels: {
                 settings: "Settings",
@@ -33,8 +36,11 @@ export default {
         }
     },
     tr: {
-        loadingScreen:{
+        loadingScreen: {
             buttonText: "Başla"
+        },
+        splashScreen: {
+            buttonText: "İleri"
         },
         settings: {
             labels: {

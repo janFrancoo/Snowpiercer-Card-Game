@@ -3,22 +3,15 @@ import { StyleSheet, Text, View, TouchableOpacity, Image, Animated } from 'react
 import colors from "../config/colors"
 import text from "../config/text"
 import { useStateValue } from "../helpers/StateProvider"
-import AsyncStorage from '@react-native-community/async-storage'
 import { Audio } from "expo-av"
+import { getData } from "../helpers/storage_helper"
 
 export default function GameLoadingView({ navigation }) {
 
     const [{ language }, dispatch] = useStateValue();
     const [disableButton, setDisable] = useState(true);
 
-    const getSettings = async () => {
-        const savedDays = await getData("days")
-        if (savedDays !== NaN && parseInt(savedDays) !== 0)
-            dispatch({
-                type: 'changeDays',
-                newDays: parseInt(savedDays)
-            })
-        
+    const getSettings = async () => {    
         const savedLang = await getData("lang")
         if (savedLang !== null)
             dispatch({
@@ -39,12 +32,6 @@ export default function GameLoadingView({ navigation }) {
                 type: 'changeMusicStatus',
                 newMusicStatus: savedMusic === "true" ? true : false
             })
-    }
-
-    const getData = async (key) => {
-        try {
-            return await AsyncStorage.getItem(key)
-        } catch(e) { console.log(e) }
     }
 
     const fade = useRef(new Animated.Value(0)).current
@@ -88,10 +75,27 @@ export default function GameLoadingView({ navigation }) {
         } catch(err) { console.log(err) }
     }
 
+    const nextView = async () => {
+        const savedDays = await getData("days")
+        if (savedDays !== null && parseInt(savedDays) !== 0) {
+            dispatch({
+                type: 'changeDays',
+                newDays: parseInt(savedDays)
+            })
+
+            navigation.replace("CardGameView")
+        } else if (savedDays === null) {
+            dispatch({
+                type: 'changeDays',
+                newDays: 0
+            })
+
+            navigation.replace("SplashView")
+        }
+    }
+
     useEffect(() => {
         getSettings()
-        loadAndPlayTrainComingSound()
-        trainLoadAnimation()
     }, [])
 
     return (
@@ -108,11 +112,17 @@ export default function GameLoadingView({ navigation }) {
                         outputRange: ['40%', '120%']
                     }) 
                 }]}>
-                    <Image source={require("../assets/images/train_loading.png")} style={styles.loadingImage} resizeMode={"center"} />
+                    <Image source={require("../assets/images/train_loading.png")} 
+                            style={styles.loadingImage} 
+                            resizeMode={"center"}
+                            onLoad={() => {
+                                loadAndPlayTrainComingSound()
+                                trainLoadAnimation()
+                            }} />
                 </Animated.View>
             </View>
             <Animated.View style={[styles.bottomContainer, { opacity: buttonFade }]}>
-                <TouchableOpacity style={styles.nextButton} onPress={() => navigation.replace("CardGameView")} disabled={disableButton}>
+                <TouchableOpacity style={styles.nextButton} onPress={() => nextView()} disabled={disableButton}>
                     <Text style={styles.buttonText}>{text[language].loadingScreen.buttonText}</Text>
                 </TouchableOpacity>
             </Animated.View>

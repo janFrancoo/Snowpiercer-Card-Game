@@ -6,10 +6,10 @@ import colors from "../config/colors"
 import MaskedView from '@react-native-community/masked-view'
 import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import AsyncStorage from '@react-native-community/async-storage'
 import { useStateValue } from "../helpers/StateProvider"
 import BottomNav from "./BottomNav"
 import { Audio } from "expo-av"
+import { getData, storeData, removeData } from "../helpers/storage_helper"
 
 export default function CardGameView({ navigation }) {
     console.disableYellowBox = true;
@@ -68,18 +68,19 @@ export default function CardGameView({ navigation }) {
             })
         ]).start()
 
+        let newDays
+
         if (scenerios[language][idx].days !== "random")
-            dispatch({
-                type: 'changeDays',
-                newDays: days + scenerios[language][idx].days
-            })
+            newDays = days + scenerios[language][idx].days
         else
-            dispatch({
-                type: 'changeDays',
-                newDays: days + Math.floor(Math.random() * 30)
-            })
+            newDays = days + Math.floor(Math.random() * 30)
+
+        dispatch({
+            type: 'changeDays',
+            newDays: newDays
+        })
         
-        storeData("days", days.toString())
+        storeData("days", newDays.toString())
         storeData("p1", p1.toString())
         storeData("p2", p2.toString())
         storeData("p3", p3.toString())
@@ -109,23 +110,11 @@ export default function CardGameView({ navigation }) {
     }
 
     const resetProgress = () => {
-        storeData("days", "0")
-        storeData("p1", "0.5")
-        storeData("p2", "0.5")
-        storeData("p3", "0.5")
-        storeData("p4", "0.5")
-    }
-
-    const getData = async (key) => {
-        try {
-            return await AsyncStorage.getItem(key)
-        } catch(e) { }
-    }
-
-    const storeData = async (key, value) => {
-        try {
-            await AsyncStorage.setItem(key, value)
-        } catch (e) { }
+        removeData("days")
+        removeData("p1")
+        removeData("p2")
+        removeData("p3")
+        removeData("p4")
     }
 
     const Card = ({ card }) => {

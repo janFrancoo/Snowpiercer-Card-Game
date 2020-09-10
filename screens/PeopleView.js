@@ -13,13 +13,14 @@ export default function PeopleView({ navigation }) {
         <SafeAreaView style={styles.container}>
             <View style={styles.listContainer}>
                 <FlatList
-                    data={people}
+                    data={language === 'en' ? people.en : people.tr}
                     renderItem={({ item }) => (
                         <TouchableOpacity style={styles.listItem} 
-                                        onPress={() => navigation.navigate("PersonDetailView", { person: item })}>
+                                        onPress={() => navigation.navigate("PersonDetailView", { person: item })}
+                                        key={item.id}>
                             <View style={styles.card}>
                                 <Text style={styles.textTitle}>{item.title}</Text>
-                                <Text style={styles.textSecondary}>{item.title}</Text>
+                                <Text style={styles.textSecondary}>{item.class}</Text>
                                 <Image style={styles.badge} source={require("../assets/icon.png")}/>
                             </View>
                             <Image style={styles.avatar} source={require("../assets/icon.png")}/>

@@ -12,7 +12,7 @@ export default function PersonDetailView({ navigation, route }) {
                 </TouchableOpacity>
                 <Image style={styles.profileAvatar} source={require("../assets/icon.png")}/>
                 <Text style={styles.textTitle}>{route.params.person.title}</Text>
-                <Text style={styles.textSecondary}>{route.params.person.title}</Text>
+                <Text style={styles.textSecondary}>{route.params.person.class}</Text>
             </ImageBackground>
             <View style={styles.description}>
                 <ScrollView showsVerticalScrollIndicator={false}>
@@ -56,17 +56,20 @@ const styles = StyleSheet.create({
     textTitle: {
         color: colors.black,
         fontWeight: "bold",
-        fontSize: 22,
+        fontSize: 24,
         marginTop: 10
     },
     textSecondary: {
         color: colors.black,
-        fontSize: 16,
+        fontSize: 18,
         marginTop: 5
     },
     textDesc: {
         color: colors.black,
-        fontSize: 16
+        fontSize: 20,
+        marginBottom: "10%",
+        fontStyle: "italic",
+        lineHeight: 35
     },
     goBackBtn: {
         position: "absolute",
