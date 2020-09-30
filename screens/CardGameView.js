@@ -10,7 +10,8 @@ import { Audio } from "expo-av"
 import { getData, storeData, removeData } from "../helpers/storage_helper"
 import people from "../scenerios/people"
 import { characterImages } from '../helpers/character_images'
-import Queue from "queue-fifo"
+import { immutablePush, immutableShift } from "../helpers/queue"
+import { getScenerioIndexById } from "../helpers/scenerio_helper"
 
 export default function CardGameView({ navigation }) {
     console.disableYellowBox = true;
@@ -20,13 +21,12 @@ export default function CardGameView({ navigation }) {
     const soundEffectCardShuffle = useRef(new Audio.Sound()).current
     const [{ language, music, musicStatus, volume, days }, dispatch] = useStateValue();
     
-    const [index, setIndex] = React.useState(0)
+    const [index, setIndex] = React.useState(2)
     const [p1, setP1] = React.useState(0.5)
     const [p2, setP2] = React.useState(0.5)
     const [p3, setP3] = React.useState(0.5)
     const [p4, setP4] = React.useState(0.5)
-
-    const cardQueue = new Queue()
+    const [cardQueue, setCardQueue] = React.useState([])
     const cardLimit = 79
 
     const slideFromTopLeft = useRef(new Animated.Value(0)).current
@@ -35,6 +35,8 @@ export default function CardGameView({ navigation }) {
     const p3bar = useRef(new Animated.Value(0.5)).current
     const p4bar = useRef(new Animated.Value(0.5)).current
     const [finished, setFinished] = React.useState(false)
+
+    // On rebel (tailor or night car) -> after few cards send 1011, 1013 or 1014
 
     const onSwiped = (idx, direction) => {
         if (volume) {
@@ -48,10 +50,22 @@ export default function CardGameView({ navigation }) {
         setP3(p3 + scenerios[language][idx].onSwiped[direction].p3)
         setP4(p4 + scenerios[language][idx].onSwiped[direction].p4)
 
-        if (cardQueue.isEmpty())
+        if (scenerios[language][idx].onSwiped[direction].nextCard != "random") {
+            for (let i=0; i<scenerios[language][idx].onSwiped[direction].nextCard.after; i++)
+                setCardQueue(immutablePush(cardQueue, Math.floor(Math.random() * cardLimit)))
+            setCardQueue(immutablePush(cardQueue, getScenerioIndexById(scenerios[language][idx].onSwiped[direction].nextCard.id)))
+
+            console.log(cardQueue)
+        }
+
+        if (cardQueue.length == 0)
             setIndex(Math.floor(Math.random() * cardLimit))
-        else
-            setIndex(cardQueue.dequeue())
+        else {
+            console.log("setIndex before -> " + cardQueue)
+            setIndex(cardQueue[0])
+            setCardQueue(immutableShift(cardQueue))
+            console.log("setIndex after -> " + cardQueue)
+        }
 
         Animated.parallel([
             Animated.timing(p1bar, {
@@ -214,7 +228,6 @@ export default function CardGameView({ navigation }) {
     useEffect(() => {
         loadProgress()
         loadSwipeSound()
-        cardQueue.enqueue(Math.floor(Math.random() * cardLimit))
         start()
     }, [])
 
