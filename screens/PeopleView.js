@@ -4,6 +4,7 @@ import colors from "../config/colors"
 import people from "../scenerios/people"
 import { useStateValue } from "../helpers/StateProvider"
 import BottomNav from "./BottomNav"
+import { characterImages } from '../helpers/character_images'
 
 export default function PeopleView({ navigation }) {
 
@@ -21,9 +22,8 @@ export default function PeopleView({ navigation }) {
                             <View style={styles.card}>
                                 <Text style={styles.textTitle}>{item.title}</Text>
                                 <Text style={styles.textSecondary}>{item.class}</Text>
-                                <Image style={styles.badge} source={require("../assets/icon.png")}/>
                             </View>
-                            <Image style={styles.avatar} source={require("../assets/icon.png")}/>
+                            <Image style={styles.avatar} source={characterImages[item.image].uri}/>
                         </TouchableOpacity>
                     )}
                     keyExtractor={card => card.id}

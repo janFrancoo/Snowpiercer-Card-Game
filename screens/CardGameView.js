@@ -4,8 +4,6 @@ import Swiper from "react-native-deck-swiper";
 import scenerios from "../scenerios/scenerios"
 import colors from "../config/colors"
 import MaskedView from '@react-native-community/masked-view'
-import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { useStateValue } from "../helpers/StateProvider"
 import BottomNav from "./BottomNav"
 import { Audio } from "expo-av"
@@ -33,6 +31,12 @@ export default function CardGameView({ navigation }) {
     const [finished, setFinished] = React.useState(false)
 
     const onSwiped = (idx, direction) => {
+
+// Next card random or specified
+// Random cars -> 0-1000
+// 1000 or later -> continuity
+// Send police to tailor -> might be trap -> rebel points -> random!!!
+
         if (volume) {
             try {
                 soundEffectCardSwipe.replayAsync()
@@ -68,16 +72,11 @@ export default function CardGameView({ navigation }) {
             })
         ]).start()
 
-        let newDays
-
-        if (scenerios[language][idx].days !== "random")
-            newDays = days + scenerios[language][idx].days
-        else
-            newDays = days + Math.floor(Math.random() * 30)
+        let newDays = days + Math.floor(Math.random() * 30)
 
         dispatch({
             type: 'changeDays',
-            newDays: newDays
+            newDays: days + Math.floor(Math.random() * 30)
         })
         
         storeData("days", newDays.toString())
@@ -120,10 +119,7 @@ export default function CardGameView({ navigation }) {
     const Card = ({ card }) => {
         return (
             <View style={styles.card}>
-                { 
-                    // card.image 
-                }
-                <FontAwesomeIcon icon={ faUserSecret } size={ 256 } color={colors.white} />
+                <Image  source={require("../assets/images/card_example.jpeg")} style={styles.cardImage} />
             </View>
         );
     }
@@ -389,5 +385,8 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: colors.white,
         alignSelf: "flex-end"
+    },
+    cardImage: {
+        borderRadius: 12
     }
 });

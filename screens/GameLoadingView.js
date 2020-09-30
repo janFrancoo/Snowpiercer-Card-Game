@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, Image, Animated } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, Image, Animated, Platform, NativeModules } from 'react-native'
 import colors from "../config/colors"
 import text from "../config/text"
 import { useStateValue } from "../helpers/StateProvider"
@@ -18,6 +18,23 @@ export default function GameLoadingView({ navigation }) {
                 type: 'changeLang',
                 newLanguage: savedLang
             })
+        else {
+            const deviceLanguage = 
+                Platform.OS === 'ios' ? NativeModules.SettingsManager.settings.AppleLocale || 
+                NativeModules.SettingsManager.settings.AppleLanguages[0]
+            : NativeModules.I18nManager.localeIdentifier;
+
+            if (deviceLanguage && deviceLanguage == "tr_TR")
+                dispatch({
+                    type: 'changeLang',
+                    newLanguage: "tr"
+                })
+            else
+                dispatch({
+                    type: 'changeLang',
+                    newLanguage: "en"
+                })
+        }
 
         const savedVolume = await getData("volume")
         if (savedVolume !== null)

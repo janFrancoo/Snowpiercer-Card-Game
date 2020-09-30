@@ -2,15 +2,16 @@ import React from 'react'
 import { StyleSheet, SafeAreaView, View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, Platform } from 'react-native'
 import colors from "../config/colors"
 import BottomNav from "./BottomNav"
+import { characterImages } from '../helpers/character_images'
 
 export default function PersonDetailView({ navigation, route }) {
     return (
         <SafeAreaView style={styles.container}>
-            <ImageBackground style={styles.profileBackground} source={require("../assets/icon.png")} blurRadius={0.5} >
+            <ImageBackground style={styles.profileBackground} source={characterImages[route.params.person.image].uri} blurRadius={4} >
                 <TouchableOpacity style={styles.goBackBtn} onPress={() => navigation.goBack(null)}>
                     <Image style={styles.goBackImage} source={require("../assets/icon.png")}></Image>
                 </TouchableOpacity>
-                <Image style={styles.profileAvatar} source={require("../assets/icon.png")}/>
+                <Image style={styles.profileAvatar} source={characterImages[route.params.person.image].uri}/>
                 <Text style={styles.textTitle}>{route.params.person.title}</Text>
                 <Text style={styles.textSecondary}>{route.params.person.class}</Text>
             </ImageBackground>
@@ -42,7 +43,8 @@ const styles = StyleSheet.create({
     profileAvatar: {
         height: "50%",
         width: "25%",
-        marginTop: "10%"
+        marginTop: "10%",
+        borderRadius: 10
     },
     description: {
         flex: 0.6,
@@ -54,13 +56,13 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     },
     textTitle: {
-        color: colors.black,
+        color: colors.white,
         fontWeight: "bold",
         fontSize: 24,
         marginTop: 10
     },
     textSecondary: {
-        color: colors.black,
+        color: colors.white,
         fontSize: 18,
         marginTop: 5
     },
