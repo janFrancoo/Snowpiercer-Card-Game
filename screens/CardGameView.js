@@ -8,6 +8,9 @@ import { useStateValue } from "../helpers/StateProvider"
 import BottomNav from "./BottomNav"
 import { Audio } from "expo-av"
 import { getData, storeData, removeData } from "../helpers/storage_helper"
+import people from "../scenerios/people"
+import { characterImages } from '../helpers/character_images'
+import Queue from "queue-fifo"
 
 export default function CardGameView({ navigation }) {
     console.disableYellowBox = true;
@@ -23,6 +26,9 @@ export default function CardGameView({ navigation }) {
     const [p3, setP3] = React.useState(0.5)
     const [p4, setP4] = React.useState(0.5)
 
+    const cardQueue = new Queue()
+    const cardLimit = 79
+
     const slideFromTopLeft = useRef(new Animated.Value(0)).current
     const p1bar = useRef(new Animated.Value(0.5)).current
     const p2bar = useRef(new Animated.Value(0.5)).current
@@ -31,12 +37,6 @@ export default function CardGameView({ navigation }) {
     const [finished, setFinished] = React.useState(false)
 
     const onSwiped = (idx, direction) => {
-
-// Next card random or specified
-// Random cars -> 0-1000
-// 1000 or later -> continuity
-// Send police to tailor -> might be trap -> rebel points -> random!!!
-
         if (volume) {
             try {
                 soundEffectCardSwipe.replayAsync()
@@ -47,7 +47,11 @@ export default function CardGameView({ navigation }) {
         setP2(p2 + scenerios[language][idx].onSwiped[direction].p2)
         setP3(p3 + scenerios[language][idx].onSwiped[direction].p3)
         setP4(p4 + scenerios[language][idx].onSwiped[direction].p4)
-        setIndex((index + 1) % scenerios[language].length)
+
+        if (cardQueue.isEmpty())
+            setIndex(Math.floor(Math.random() * cardLimit))
+        else
+            setIndex(cardQueue.dequeue())
 
         Animated.parallel([
             Animated.timing(p1bar, {
@@ -119,7 +123,8 @@ export default function CardGameView({ navigation }) {
     const Card = ({ card }) => {
         return (
             <View style={styles.card}>
-                <Image  source={require("../assets/images/card_example.jpeg")} style={styles.cardImage} />
+                <Image source={characterImages[people[language][parseInt(scenerios[language][index].person)].image].uri} 
+                    resizeMode="cover" style={styles.cardImage} />
             </View>
         );
     }
@@ -209,6 +214,7 @@ export default function CardGameView({ navigation }) {
     useEffect(() => {
         loadProgress()
         loadSwipeSound()
+        cardQueue.enqueue(Math.floor(Math.random() * cardLimit))
         start()
     }, [])
 
@@ -271,7 +277,6 @@ export default function CardGameView({ navigation }) {
                     disableBottomSwipe
                     animateCardOpacity
                     cardHorizontalMargin={width * 10 / 100}
-                    stackSize={(scenerios[language].length >= 5 ? 5 : scenerios[language].length)}
                     infinite
                     backgroundColor={colors.white}
                     useViewOverflow={Platform.OS === 'ios'}
@@ -387,6 +392,9 @@ const styles = StyleSheet.create({
         alignSelf: "flex-end"
     },
     cardImage: {
-        borderRadius: 12
+        borderRadius: 12,
+        alignSelf: 'center',
+        height:'100%', 
+        width:'100%'
     }
 });
