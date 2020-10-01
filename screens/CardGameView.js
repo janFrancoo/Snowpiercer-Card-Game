@@ -10,7 +10,6 @@ import { Audio } from "expo-av"
 import { getData, storeData, removeData } from "../helpers/storage_helper"
 import people from "../scenerios/people"
 import { characterImages } from '../helpers/character_images'
-import { immutablePush, immutableShift } from "../helpers/queue"
 import { getScenerioIndexById } from "../helpers/scenerio_helper"
 
 export default function CardGameView({ navigation }) {
@@ -26,6 +25,9 @@ export default function CardGameView({ navigation }) {
     const [p2, setP2] = React.useState(0.5)
     const [p3, setP3] = React.useState(0.5)
     const [p4, setP4] = React.useState(0.5)
+    const [secret, setSecret] = React.useState(0)
+    const [tailorRebel, setTailorRebel] = React.useState(0)
+    const [nightCarRebel, setNightCarLRebel] = React.useState(0)
     const [cardQueue, setCardQueue] = React.useState([])
     const cardLimit = 79
 
@@ -45,46 +47,52 @@ export default function CardGameView({ navigation }) {
             } catch (err) { }
         }
 
-        setP1(p1 + scenerios[language][idx].onSwiped[direction].p1)
-        setP2(p2 + scenerios[language][idx].onSwiped[direction].p2)
-        setP3(p3 + scenerios[language][idx].onSwiped[direction].p3)
-        setP4(p4 + scenerios[language][idx].onSwiped[direction].p4)
+        console.log(idx + " " + scenerios[language][idx].onSwiped[direction].p1 + " " + scenerios[language][idx].onSwiped[direction].p2
+            + " " + scenerios[language][idx].onSwiped[direction].p3 + " " + scenerios[language][idx].onSwiped[direction].p4)
 
-        if (scenerios[language][idx].onSwiped[direction].nextCard != "random") {
-            for (let i=0; i<scenerios[language][idx].onSwiped[direction].nextCard.after; i++)
-                setCardQueue(immutablePush(cardQueue, Math.floor(Math.random() * cardLimit)))
-            setCardQueue(immutablePush(cardQueue, getScenerioIndexById(scenerios[language][idx].onSwiped[direction].nextCard.id)))
+        setP1(p1 + scenerios[language][index].onSwiped[direction].p1)
+        setP2(p2 + scenerios[language][index].onSwiped[direction].p2)
+        setP3(p3 + scenerios[language][index].onSwiped[direction].p3)
+        setP4(p4 + scenerios[language][index].onSwiped[direction].p4)
+        setSecret(secret + scenerios[language][index].onSwiped[direction].secret)
+        setTailorRebel(tailorRebel + scenerios[language][index].onSwiped[direction].tailorRebel)
+        setNightCarLRebel(nightCarRebel + scenerios[language][index].onSwiped[direction].nightCarRebel)
 
-            console.log(cardQueue)
+        if (scenerios[language][index].onSwiped[direction].nextCard != "random") {
+            const addCards = []
+            for (let i=0; i<scenerios[language][index].onSwiped[direction].nextCard.after; i++)
+                addCards.push(Math.floor(Math.random() * cardLimit))
+            addCards.push(getScenerioIndexById(scenerios[language][index].onSwiped[direction].nextCard.id))
+            setCardQueue([...cardQueue, ...addCards])
         }
 
         if (cardQueue.length == 0)
             setIndex(Math.floor(Math.random() * cardLimit))
         else {
-            console.log("setIndex before -> " + cardQueue)
-            setIndex(cardQueue[0])
-            setCardQueue(immutableShift(cardQueue))
-            console.log("setIndex after -> " + cardQueue)
+            const newQueue = cardQueue.slice()
+            const newIndex = newQueue.shift()
+            setCardQueue(newQueue)
+            setIndex(newIndex)
         }
 
         Animated.parallel([
             Animated.timing(p1bar, {
-                toValue: p1 + scenerios[language][idx].onSwiped[direction].p1,
+                toValue: p1 + scenerios[language][index].onSwiped[direction].p1,
                 duration: 500,
                 useNativeDriver: false
             }),
             Animated.timing(p2bar, {
-                toValue: p2 + scenerios[language][idx].onSwiped[direction].p2,
+                toValue: p2 + scenerios[language][index].onSwiped[direction].p2,
                 duration: 500,
                 useNativeDriver: false
             }),
             Animated.timing(p3bar, {
-                toValue: p3 + scenerios[language][idx].onSwiped[direction].p3,
+                toValue: p3 + scenerios[language][index].onSwiped[direction].p3,
                 duration: 500,
                 useNativeDriver: false
             }),
             Animated.timing(p4bar, {
-                toValue: p4 + scenerios[language][idx].onSwiped[direction].p4,
+                toValue: p4 + scenerios[language][index].onSwiped[direction].p4,
                 duration: 500,
                 useNativeDriver: false
             })
@@ -102,6 +110,9 @@ export default function CardGameView({ navigation }) {
         storeData("p2", p2.toString())
         storeData("p3", p3.toString())
         storeData("p4", p4.toString())
+        storeData("secret", secret.toString())
+        storeData("tailorRebel", tailorRebel.toString())
+        storeData("nightCarRebel", nightCarRebel.toString())
 
         const highScore = getData("high_score")
         if (highScore === null)
@@ -124,6 +135,14 @@ export default function CardGameView({ navigation }) {
                 navigation.replace("GameOverView", { e: { p: idx, q: "empty" } })
             }
         })
+
+        if (secret >= 100) {
+
+        } else if (tailorRebel >= 100) {
+
+        } else if (nightCarRebel >= 100) {
+
+        }
     }
 
     const resetProgress = () => {
@@ -191,6 +210,18 @@ export default function CardGameView({ navigation }) {
             setP1(parseFloat(savedP4))
             p4bar.setValue(parseFloat(savedP4))
         }
+
+        const savedSecret = await getData("secret")
+        if (savedSecret !== null)
+            setSecret(parseInt(savedSecret))
+
+        const savedTailorRebel = await getData("tailorRebel")
+        if (savedTailorRebel !== null)
+            setSecret(parseInt(savedTailorRebel))
+
+        const savedNightCarRebel = await getData("nightCarRebel")
+        if (savedNightCarRebel !== null)
+            setSecret(parseInt(savedNightCarRebel))
     }
 
     const loadSwipeSound = async () => {
