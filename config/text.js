@@ -33,6 +33,13 @@ export default {
         bottomNav: {
             day: "Day",
             year: "Year"
+        },
+        inGame: {
+            specialEvents: {
+                secret: "Move fast, your secret is about to be revealed!",
+                tailorRebel: "Tailmen are rebelling! Make decisions quickly!",
+                nightCarRebel: "Rebellion in the lower wagons! Make decisions quickly!"
+            }
         }
     },
     tr: {
@@ -69,6 +76,13 @@ export default {
         bottomNav: {
             day: "Gün",
             year: "Yıl"
+        },
+        inGame: {
+            specialEvents: {
+                secret: "Sırrın açığa çıkmak üzere, hızlı hareket et!",
+                tailorRebel: "Kuyrukçular isyan ediyor! Kararları çabuk ver!",
+                nightCarRebel: "Alt kademelerde isyan çıktı! Kararları çabuk ver!"
+            }
         }
     }
 }

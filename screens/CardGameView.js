@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, Dimensions, Image, Animated } from "react-nativ
 import Swiper from "react-native-deck-swiper";
 import scenerios from "../scenerios/scenerios"
 import colors from "../config/colors"
+import text from "../config/text"
 import MaskedView from '@react-native-community/masked-view'
 import { useStateValue } from "../helpers/StateProvider"
 import BottomNav from "./BottomNav"
@@ -11,16 +12,18 @@ import { getData, storeData, removeData } from "../helpers/storage_helper"
 import people from "../scenerios/people"
 import { characterImages } from '../helpers/character_images'
 import { getScenerioIndexById } from "../helpers/scenerio_helper"
+import ReactInterval from "react-interval"
 
 export default function CardGameView({ navigation }) {
     console.disableYellowBox = true;
     const { width, height} = Dimensions.get('window');
+    let specialEventInterval
 
     const soundEffectCardSwipe = useRef(new Audio.Sound()).current
     const soundEffectCardShuffle = useRef(new Audio.Sound()).current
     const [{ language, music, musicStatus, volume, days }, dispatch] = useStateValue();
     
-    const [index, setIndex] = React.useState(2)
+    const [index, setIndex] = React.useState(0)
     const [p1, setP1] = React.useState(0.5)
     const [p2, setP2] = React.useState(0.5)
     const [p3, setP3] = React.useState(0.5)
@@ -29,6 +32,7 @@ export default function CardGameView({ navigation }) {
     const [tailorRebel, setTailorRebel] = React.useState(0)
     const [nightCarRebel, setNightCarLRebel] = React.useState(0)
     const [cardQueue, setCardQueue] = React.useState([])
+    const [specialEvent, setSpecialEvent] = React.useState("")
     const cardLimit = 79
 
     const slideFromTopLeft = useRef(new Animated.Value(0)).current
@@ -36,9 +40,8 @@ export default function CardGameView({ navigation }) {
     const p2bar = useRef(new Animated.Value(0.5)).current
     const p3bar = useRef(new Animated.Value(0.5)).current
     const p4bar = useRef(new Animated.Value(0.5)).current
+    const textFade = useRef(new Animated.Value(0)).current
     const [finished, setFinished] = React.useState(false)
-
-    // On rebel (tailor or night car) -> after few cards send 1011, 1013 or 1014
 
     const onSwiped = (idx, direction) => {
         if (volume) {
@@ -47,16 +50,18 @@ export default function CardGameView({ navigation }) {
             } catch (err) { }
         }
 
-        console.log(idx + " " + scenerios[language][idx].onSwiped[direction].p1 + " " + scenerios[language][idx].onSwiped[direction].p2
-            + " " + scenerios[language][idx].onSwiped[direction].p3 + " " + scenerios[language][idx].onSwiped[direction].p4)
-
         setP1(p1 + scenerios[language][index].onSwiped[direction].p1)
         setP2(p2 + scenerios[language][index].onSwiped[direction].p2)
         setP3(p3 + scenerios[language][index].onSwiped[direction].p3)
         setP4(p4 + scenerios[language][index].onSwiped[direction].p4)
-        setSecret(secret + scenerios[language][index].onSwiped[direction].secret)
-        setTailorRebel(tailorRebel + scenerios[language][index].onSwiped[direction].tailorRebel)
-        setNightCarLRebel(nightCarRebel + scenerios[language][index].onSwiped[direction].nightCarRebel)
+
+        const addSecret = scenerios[language][index].onSwiped[direction].secret
+        const addTailorRebel = scenerios[language][index].onSwiped[direction].tailorRebel
+        const addNightCarRebel = scenerios[language][index].onSwiped[direction].nightCarRebel
+
+        setSecret(addSecret != -100 ? secret + addSecret : addSecret)
+        setTailorRebel(addTailorRebel != -100 ? tailorRebel + addTailorRebel : addTailorRebel)
+        setNightCarLRebel(addNightCarRebel != -100 ?  nightCarRebel + addNightCarRebel : addNightCarRebel)
 
         if (scenerios[language][index].onSwiped[direction].nextCard != "random") {
             const addCards = []
@@ -136,13 +141,95 @@ export default function CardGameView({ navigation }) {
             }
         })
 
-        if (secret >= 100) {
-
-        } else if (tailorRebel >= 100) {
-
-        } else if (nightCarRebel >= 100) {
-
+        if (specialEvent == "") {
+            if (secret >= 100) {
+                setSpecialEvent("secret")
+    
+                const addCards = []
+                for (let i=0; i<10; i++)
+                    addCards.push(Math.floor(Math.random() * cardLimit))
+                addCards.push(getScenerioIndexById("1011"))
+                setCardQueue([...cardQueue, ...addCards])
+    
+                specialEventAnimation("start")
+            } else if (tailorRebel >= 100) {
+                setSpecialEvent("tailorRebel")
+    
+                const addCards = []
+                for (let i=0; i<12; i++)
+                    addCards.push(Math.floor(Math.random() * cardLimit))
+                addCards.push(getScenerioIndexById("1014"))
+                setCardQueue([...cardQueue, ...addCards])
+    
+                specialEventAnimation("start")
+            } else if (nightCarRebel >= 100) {
+                setSpecialEvent("nightCarRebel")
+    
+                const addCards = []
+                for (let i=0; i<8; i++)
+                    addCards.push(Math.floor(Math.random() * cardLimit))
+                addCards.push(getScenerioIndexById("1013"))
+                setCardQueue([...cardQueue, ...addCards])
+    
+                specialEventAnimation("start")
+            }
         }
+
+        if (secret == -100 || tailorRebel == -100 || nightCarRebel == -100) {
+            setSpecialEvent("")
+            specialEventAnimation("stop")
+        }
+    }
+
+    const specialEventAnimation = (command) => {
+        if (command == "start") {
+            specialEventInterval = setInterval(() => {                
+                Animated.sequence([
+                    Animated.timing(textFade, {
+                        toValue: 1,
+                        duration: 500 ,
+                        useNativeDriver: false
+                    }),
+                    Animated.timing(textFade, {
+                        toValue: 0,
+                        duration: 500,
+                        useNativeDriver: false
+                    })
+                ]).start()
+            }, 1500)
+        } else {
+            clearInterval(specialEventInterval)
+        }
+    }
+
+    const specialEventDecreaseProgress = () => {
+        setP1(p1 - 0.01)
+        setP2(p2 - 0.01)
+        setP3(p3 - 0.01)
+        setP4(p4 - 0.01)
+
+        Animated.parallel([
+            Animated.timing(p1bar, {
+                toValue: p1 - 0.01,
+                duration: 500,
+                useNativeDriver: false
+            }),
+            Animated.timing(p2bar, {
+                toValue: p2 - 0.01,
+                duration: 500,
+                useNativeDriver: false
+            }),
+            Animated.timing(p3bar, {
+                toValue: p3 - 0.01,
+                duration: 500,
+                useNativeDriver: false
+            }),
+            Animated.timing(p4bar, {
+                toValue: p4 - 0.01,
+                duration: 500,
+                useNativeDriver: false
+            })
+        ]).start()
     }
 
     const resetProgress = () => {
@@ -151,6 +238,9 @@ export default function CardGameView({ navigation }) {
         removeData("p2")
         removeData("p3")
         removeData("p4")
+        removeData("secret")
+        removeData("tailorRebel")
+        removeData("nightCarRebel")
     }
 
     const Card = ({ card }) => {
@@ -257,6 +347,7 @@ export default function CardGameView({ navigation }) {
     }
 
     useEffect(() => {
+        setIndex(Math.floor(Math.random() * cardLimit))
         loadProgress()
         loadSwipeSound()
         start()
@@ -265,50 +356,59 @@ export default function CardGameView({ navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.topContainer}>
-                <MaskedView style={styles.maskedView} maskElement={
-                    <View style={styles.progressImageContainer}>
-                        <Image style={styles.progressImage} source={require("../assets/images/progress/energy.png")} />
-                    </View>
-                }>
-                    <Image style={[styles.progressImage, { position: "absolute" }]} source={require("../assets/images/progress/energy.png")} />
-                    <Animated.View style={[styles.mask, { height: p1bar.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: ["45%", "82%"]
-                    }) }]} />
-                </MaskedView>
-                <MaskedView style={styles.maskedView} maskElement={
-                    <View style={styles.progressImageContainer}>
-                        <Image style={styles.progressImage} source={require("../assets/images/progress/food.png")} />
-                    </View>
-                }>
-                    <Image style={[styles.progressImage, { position: "absolute" }]} source={require("../assets/images/progress/food.png")} />
-                    <Animated.View style={[styles.mask, { height: p2bar.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: ["50%", "76%"]
-                    }) }]} />
-                </MaskedView>
-                <MaskedView style={styles.maskedView} maskElement={
-                    <View style={styles.progressImageContainer}>
-                        <Image style={styles.progressImage} source={require("../assets/images/progress/forces.png")} />
-                    </View>
-                }>
-                    <Image style={[styles.progressImage, { position: "absolute" }]} source={require("../assets/images/progress/forces.png")} />
-                    <Animated.View style={[styles.mask, { height: p3bar.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: ["45%", "85%"]
-                    }) }]} />
-                </MaskedView>
-                <MaskedView style={styles.maskedView} maskElement={
-                    <View style={styles.progressImageContainer}>
-                        <Image style={styles.progressImage} source={require("../assets/images/progress/classes.png")} />
-                    </View>
-                }>
-                    <Image style={[styles.progressImage, { position: "absolute" }]} source={require("../assets/images/progress/classes.png")} />
-                    <Animated.View style={[styles.mask, { height: p4bar.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: ["45%", "80%"]
-                    }) }]} />
-                </MaskedView>
+                <View style={styles.progressContainer}>
+                    <MaskedView style={styles.maskedView} maskElement={
+                        <View style={styles.progressImageContainer}>
+                            <Image style={styles.progressImage} source={require("../assets/images/progress/energy.png")} />
+                        </View>
+                    }>
+                        <Image style={[styles.progressImage, { position: "absolute" }]} source={require("../assets/images/progress/energy.png")} />
+                        <Animated.View style={[styles.mask, { height: p1bar.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: ["45%", "82%"]
+                        }) }]} />
+                    </MaskedView>
+                    <MaskedView style={styles.maskedView} maskElement={
+                        <View style={styles.progressImageContainer}>
+                            <Image style={styles.progressImage} source={require("../assets/images/progress/food.png")} />
+                        </View>
+                    }>
+                        <Image style={[styles.progressImage, { position: "absolute" }]} source={require("../assets/images/progress/food.png")} />
+                        <Animated.View style={[styles.mask, { height: p2bar.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: ["50%", "76%"]
+                        }) }]} />
+                    </MaskedView>
+                    <MaskedView style={styles.maskedView} maskElement={
+                        <View style={styles.progressImageContainer}>
+                            <Image style={styles.progressImage} source={require("../assets/images/progress/forces.png")} />
+                        </View>
+                    }>
+                        <Image style={[styles.progressImage, { position: "absolute" }]} source={require("../assets/images/progress/forces.png")} />
+                        <Animated.View style={[styles.mask, { height: p3bar.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: ["45%", "85%"]
+                        }) }]} />
+                    </MaskedView>
+                    <MaskedView style={styles.maskedView} maskElement={
+                        <View style={styles.progressImageContainer}>
+                            <Image style={styles.progressImage} source={require("../assets/images/progress/classes.png")} />
+                        </View>
+                    }>
+                        <Image style={[styles.progressImage, { position: "absolute" }]} source={require("../assets/images/progress/classes.png")} />
+                        <Animated.View style={[styles.mask, { height: p4bar.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: ["45%", "80%"]
+                        }) }]} />
+                    </MaskedView>
+                </View>
+                <Animated.View style={[styles.specialEventView, { opacity: textFade }]}>
+                    <Text style={styles.specialEventText}>
+                        { specialEvent != "" && text[language].inGame.specialEvents[specialEvent] }
+                    </Text>
+                </Animated.View>
+                <ReactInterval timeout={2000} enabled={specialEvent != ""}
+                    callback={() => specialEventDecreaseProgress()} />
             </View>
             <View style={styles.swiperContainer}>
                 { finished && <Swiper
@@ -399,11 +499,22 @@ const styles = StyleSheet.create({
     },
     topContainer: {
         flex: 0.20,
+        alignItems: "center",
+    },
+    progressContainer: {
+        flex: 0.9,
         flexDirection: 'row',
         justifyContent: "center",
-        alignItems: "center",
         paddingTop: "5%"
     },
+    specialEventView: {
+        marginBottom: "2%"
+    },
+    specialEventText: {
+        color: colors.red,
+        fontSize: 14,
+        fontWeight: "bold"
+    }, 
     bottomContainer: {
         flex: 0.10,
         justifyContent: "center"
