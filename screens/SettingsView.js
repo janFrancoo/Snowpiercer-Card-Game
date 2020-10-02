@@ -7,7 +7,7 @@ import { faMusic, faVolumeUp, faVolumeMute, faLanguage, faGamepad } from '@forta
 import text from "../config/text"
 import { useStateValue } from "../helpers/StateProvider"
 import BottomNav from "./BottomNav"
-import { storeData } from "../helpers/storage_helper"
+import { storeData, removeData } from "../helpers/storage_helper"
 
 export default function SettingsView({ navigation }) {
 
@@ -27,7 +27,19 @@ export default function SettingsView({ navigation }) {
     }
 
     const startOver = () => {
-        console.log("starting over...")
+        storeData("p1", "0.5")
+        storeData("p2", "0.5")
+        storeData("p3", "0.5")
+        storeData("p4", "0.5")
+        storeData("secret", "0")
+        storeData("tailorRebel", "0")
+        storeData("nightCarRebel", "0")
+        removeData("days")
+
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'GameLoadingView' }],
+        });
     }
 
     return (

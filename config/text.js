@@ -28,7 +28,7 @@ export default {
                 cancel: "Cancel",
                 ok: "Ok"
             },
-            about: "This app is a fan made game of Snowpiercer. Contact: poisonweeb@gmail.com"
+            about: "This app is a fan made game of Snowpiercer.\n\nContact: poisonweeb@gmail.com\n"
         },
         bottomNav: {
             day: "Day",
@@ -71,7 +71,7 @@ export default {
                 cancel: "İptal",
                 ok: "Tamam"
             },
-            about: "Bu uygulama Snowpiercer'ın fan yapımı oyunudur. İletişim: poisonweeb@gmail.com"
+            about: "Bu uygulama Snowpiercer'ın fan yapımı oyunudur.\n\nİletişim: poisonweeb@gmail.com\n"
         },
         bottomNav: {
             day: "Gün",
