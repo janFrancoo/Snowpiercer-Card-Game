@@ -36,6 +36,17 @@ export default function SettingsView({ navigation }) {
         })
     }
 
+    const openMarket = () => {
+        let uri
+
+        if (Platform.OS == "ios")
+            uri = "itms-apps://itunes.apple.com/app/id..."
+        else
+            uri = "market://details?id=com.janfranco.snowpiercer"
+
+        Linking.openURL(uri)
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.headerContainer}>
@@ -119,7 +130,7 @@ export default function SettingsView({ navigation }) {
                         <Text>{text[language].settings.labels.moreGamesText}</Text>
                     </View>
                     <TouchableOpacity style={{justifyContent: "center", flex: 0.25}} 
-                        onPress={() => Linking.openURL("market://details?id=com.janfranco.snowpiercer")}
+                        onPress={() => openMarket()}
                     >
                         <View style={styles.button}>
                             <Text style={styles.buttonText}>{text[language].settings.labels.moreGamesBtn}</Text>

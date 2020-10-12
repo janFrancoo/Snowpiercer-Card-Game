@@ -13,16 +13,16 @@ export default function SplashView({ navigation }) {
     let countText = 1
     const [line, setLine] = React.useState(introText[language][countText.toString()].line)
 
-    const updateText = () => {
+    const updateText = (time) => {
         setTimeout(() => {
             countText += 1
             setLine(introText[language][countText.toString()].line)
 
-            console.log(countText)
-
-            if (countText < 4)
+            if (countText == 2)
+                updateText(8000)
+            else if (countText < 3)
                 updateText()
-        }, 3000)
+        }, time)
     }
 
     return (
@@ -36,7 +36,7 @@ export default function SplashView({ navigation }) {
                     rate={1.0}
                     volume={1.0}
                     style={styles.video}
-                    onLoad={() => updateText()}
+                    onLoad={() => updateText(6000)}
                 />
                 <TouchableOpacity style={styles.nextButton} onPress={() => navigation.replace("CardGameView")}>
                     <Text style={styles.buttonText}>{text[language].splashScreen.buttonText}</Text>
@@ -78,13 +78,17 @@ const styles = StyleSheet.create({
         width: "20%",
         height: "5%",
         backgroundColor: colors.white,
-        borderRadius: 10,
+        borderRadius: 6,
     },
     buttonText: {
         color: colors.black,
-        fontSize: 20
+        fontSize: 16
     },
     textWhite: {
+        fontWeight: "bold",
+        fontStyle: "italic",
+        fontSize: 18,
+        marginHorizontal: "10%",
         color: colors.white
     }
 })
