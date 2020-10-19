@@ -1,11 +1,13 @@
-import React, { useRef } from 'react'
-import { StyleSheet, Text, Image, View, Animated, TouchableOpacity } from 'react-native'
+import React, { useRef, useEffect } from 'react'
+import { StyleSheet, Text, View, Animated, TouchableOpacity } from 'react-native'
 import colors from "../config/colors"
 import gameOver from "../scenerios/gameOver"
 import { resetProgress } from "../helpers/scenerio_helper"
 import text from "../config/text"
 import { useStateValue } from "../helpers/StateProvider"
 import { Audio } from "expo-av"
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { faSkull } from '@fortawesome/free-solid-svg-icons'
 
 export default function GameOverView({ route, navigation }) {
     const [{ language, music }, dispatch] = useStateValue()
@@ -47,20 +49,20 @@ export default function GameOverView({ route, navigation }) {
         })
     }
 
+    useEffect(() => {
+        loadGameOverSound()
+        loadAnimation()
+    }, [])
+
     return (
         <View style={styles.container}>
             <View style={styles.animatedContainer}>
                 <Animated.View style={[styles.animated, { opacity: fade }]}>
-                    <Image source={require("../assets/images/train_loading.png")} 
-                            resizeMode={"center"}
-                            onLoad={() => {
-                                loadGameOverSound()
-                                loadAnimation()
-                            }} />
+                    <FontAwesomeIcon icon={faSkull} color={colors.white} size={300} opacity={0.55} style={{ position: 'absolute' }} />
+                    <Text style={styles.textWhite}>{gameOver[route.params.e.p][route.params.e.q][language]}</Text>
                 </Animated.View>
             </View>
             <Animated.View style={[styles.bottomContainer, { opacity: buttonFade }]}>
-                <Text style={styles.textWhite}>{gameOver[route.params.e.p][route.params.e.q].text}</Text>
                 <TouchableOpacity style={styles.nextButton} onPress={() => startOver()}>
                     <Text style={styles.buttonText}>{text[language].settings.startOver.title}</Text>
                 </TouchableOpacity>
@@ -81,6 +83,11 @@ const styles = StyleSheet.create({
         flex: 0.85,
         width: "100%"
     },
+    image: {
+        flex: 1,
+        resizeMode: "cover",
+        justifyContent: "center"
+      },
     bottomContainer: {
         flex: 0.15,
         width: "100%",
@@ -101,9 +108,12 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: colors.black,
-        fontSize: 20
+        fontSize: 18
     },
     textWhite: {
+        marginHorizontal: 16,
+        textAlign: "center",
+        fontSize: 24,
         color: colors.white
     }
 })

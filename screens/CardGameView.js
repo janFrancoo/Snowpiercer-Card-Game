@@ -50,8 +50,8 @@ export default function CardGameView({ navigation }) {
             } catch (err) { }
         }
 
-        setP1(p1 + scenerios[language][index].onSwiped[direction].p1)
-        setP2(p2 + scenerios[language][index].onSwiped[direction].p2)
+        setP1(Math.min(p1 + scenerios[language][index].onSwiped[direction].p1, 1))
+        setP2(Math.min(p2 + scenerios[language][index].onSwiped[direction].p2, 1))
         setP3(p3 + scenerios[language][index].onSwiped[direction].p3)
         setP4(p4 + scenerios[language][index].onSwiped[direction].p4)
 
@@ -132,7 +132,7 @@ export default function CardGameView({ navigation }) {
         const progresses = [p1, p2, p3, p4]
 
         progresses.forEach((p, idx) => {
-            if (p >= 1) {
+            if (p >= 1 && idx > 1) {
                 resetProgress()
                 navigation.replace("GameOverView", { e: { p: idx, q: "full" }})
             } else if (p <= 0) {
