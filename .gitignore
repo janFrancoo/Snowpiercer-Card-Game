@@ -12,6 +12,7 @@ npm-debug.*
 web-build/
 scenerios/
 assets/
+config/ad.js
 
 # macOS
 .DS_Store

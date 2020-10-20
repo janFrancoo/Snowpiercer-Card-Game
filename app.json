@@ -16,8 +16,16 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "android": {
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-5513305314291372~6375813882"
+      }
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-5513305314291372~4758468127"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
