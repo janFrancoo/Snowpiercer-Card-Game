@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native'
+import { StyleSheet, View, TouchableOpacity, Text, ScrollView } from 'react-native'
 import { useStateValue } from "../helpers/StateProvider"
 import colors from "../config/colors"
 import text from "../config/text"
@@ -43,9 +43,11 @@ export default function SplashView({ navigation }) {
                 </TouchableOpacity>
             </View>
             <View style={styles.textContainer}>
-                <Text style={styles.textWhite}>
-                    { line }
-                </Text>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    <Text style={styles.textWhite}>
+                        { line }
+                    </Text>
+                </ScrollView>
             </View>
         </View>
     )
@@ -58,14 +60,14 @@ const styles = StyleSheet.create({
         backgroundColor: colors.black
     },
     videoContainer: {
-        flex: 0.8
+        flex: 0.7
     },
     video: {
         width: "100%",
         height: "100%"
     },
     textContainer: {
-        flex: 0.2,
+        flex: 0.3,
         alignItems: "center",
         justifyContent: "center"
     },

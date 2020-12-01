@@ -1,6 +1,7 @@
 export default {
     en: {
         loadingScreen:{
+            loadingText: "Loading...",
             buttonText: "Start"
         },
         splashScreen: {
@@ -44,6 +45,7 @@ export default {
     },
     tr: {
         loadingScreen: {
+            loadingText: "Yükleniyor...",
             buttonText: "Başla"
         },
         splashScreen: {

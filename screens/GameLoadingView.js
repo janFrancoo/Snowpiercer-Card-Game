@@ -8,8 +8,9 @@ import { getData } from "../helpers/storage_helper"
 
 export default function GameLoadingView({ navigation }) {
 
-    const [{ language }, dispatch] = useStateValue();
-    const [disableButton, setDisable] = useState(true);
+    const [{ language }, dispatch] = useStateValue()
+    const [disableButton, setDisable] = useState(true)
+    const [isLoaded, setLoaded] = useState(false)
 
     const getSettings = async () => {    
         const savedLang = await getData("lang")
@@ -57,6 +58,22 @@ export default function GameLoadingView({ navigation }) {
     const growVertical = useRef(new Animated.Value(0)).current
 
     const trainLoadAnimation = () => {
+        Platform.OS === 'ios' ? 
+        Animated.sequence([
+            Animated.parallel([
+                Animated.timing(fade, {
+                    toValue: 1,
+                    duration: 8000 ,
+                    useNativeDriver: false
+                })
+            ]),
+            Animated.timing(buttonFade, {
+                toValue: 1,
+                duration: 2000,
+                useNativeDriver: false
+            })
+        ]).start(() => setDisable(false)) 
+        :
         Animated.sequence([
             Animated.parallel([
                 Animated.timing(fade, {
@@ -111,20 +128,27 @@ export default function GameLoadingView({ navigation }) {
         }
     }
 
+    const onTrainImageLoaded = () => {
+        setLoaded(true)
+        loadAndPlayTrainComingSound()
+        trainLoadAnimation()
+    }
+
     useEffect(() => {
         getSettings()
     }, [])
 
     return (
         <View style={styles.container}>
+            { !isLoaded && <Text style={styles.loadingText}>{text[language].loadingScreen.loadingText}</Text> }
             <View style={styles.animatedContainer}>
                 <Animated.View style={[styles.animated, { 
                     opacity: fade, 
-                    width: growHorizontal.interpolate({
+                    width: Platform.OS === 'ios' ? "100%" : growHorizontal.interpolate({
                         inputRange: [0, 1],
                         outputRange: ['60%', '120%']
                     }),
-                    height: growVertical.interpolate({
+                    height: Platform.OS === 'ios' ? "100%" : growVertical.interpolate({
                         inputRange: [0, 1],
                         outputRange: ['40%', '120%']
                     }) 
@@ -132,10 +156,7 @@ export default function GameLoadingView({ navigation }) {
                     <Image source={require("../assets/images/train_loading.png")} 
                             style={styles.loadingImage} 
                             resizeMode={"center"}
-                            onLoad={() => {
-                                loadAndPlayTrainComingSound()
-                                trainLoadAnimation()
-                            }} />
+                            onLoad={onTrainImageLoaded} />
                 </Animated.View>
             </View>
             <Animated.View style={[styles.bottomContainer, { opacity: buttonFade }]}>
@@ -181,6 +202,11 @@ const styles = StyleSheet.create({
     buttonText: {
         color: colors.black,
         fontSize: 20
+    },
+    loadingText: {
+        color: colors.white,
+        fontSize: 36,
+        position: "absolute"
     },
     loadingImage: {
         width: "100%",

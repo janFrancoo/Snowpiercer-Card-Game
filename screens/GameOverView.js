@@ -8,9 +8,6 @@ import { useStateValue } from "../helpers/StateProvider"
 import { Audio } from "expo-av"
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faSkull } from '@fortawesome/free-solid-svg-icons'
-import { AdMobInterstitial, setTestDeviceIDAsync } from 'expo-ads-admob';
-import Constants from "expo-constants"
-import { adConfig } from "../config/ad"
 
 export default function GameOverView({ route, navigation }) {
     const [{ language, music }, dispatch] = useStateValue()
@@ -43,31 +40,7 @@ export default function GameOverView({ route, navigation }) {
         ]).start()
     }
 
-    const adSetup = async () => {
-        await setTestDeviceIDAsync('EMULATOR');
-
-        var testId
-        var productionId
-
-        if (Platform.OS === 'android') {
-            testId = adConfig.androidTestId
-            productionId = adConfig.androidProductionId
-        } else {
-            testId = adConfig.iosTestId
-            productionId = adConfig.iosProductionId
-        }
-
-        const adUnitId = Constants.isDevice && !__DEV__ ? productionId : testId
-        await AdMobInterstitial.setAdUnitID(adUnitId);
-    }
-
-    const showAd = async () => {
-        await AdMobInterstitial.requestAdAsync({ servePersonalizedAds: true});
-        await AdMobInterstitial.showAdAsync();
-    }
-
     const startOver = () => {
-        showAd()
         resetProgress()
 
         navigation.reset({
@@ -79,7 +52,6 @@ export default function GameOverView({ route, navigation }) {
     useEffect(() => {
         loadGameOverSound()
         loadAnimation()
-        adSetup()
     }, [])
 
     return (

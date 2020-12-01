@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "snowpiercer-card-game",
-    "slug": "snowpiercer-card-game",
+    "name": "Revolution: 1001 Wagon",
+    "slug": "revolution-1001-wagon",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -19,16 +19,21 @@
     "android": {
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-5513305314291372~6375813882"
-      }
+      },
+      "package": "com.janfranco.revolution_car",
+      "versionCode": 1
     },
     "ios": {
       "supportsTablet": true,
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-5513305314291372~4758468127"
-      }
+      },
+      "bundleIdentifier": "com.jfranco.revolutioncar",
+      "buildNumber": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "An intensive politics card game about a train that includes heavily class discrimination."
   }
 }

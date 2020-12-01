@@ -9,10 +9,36 @@ import { useStateValue } from "../helpers/StateProvider"
 import BottomNav from "./BottomNav"
 import { storeData } from "../helpers/storage_helper"
 import { resetProgress } from "../helpers/scenerio_helper"
+import { AdMobInterstitial, setTestDeviceIDAsync } from 'expo-ads-admob';
+import Constants from "expo-constants"
+import { adConfig } from "../config/ad"
 
 export default function SettingsView({ navigation }) {
 
     const [{ language, music, musicStatus, volume }, dispatch] = useStateValue();
+
+    const adSetup = async () => {
+        await setTestDeviceIDAsync('EMULATOR');
+
+        var testId
+        var productionId
+
+        if (Platform.OS === 'android') {
+            testId = adConfig.androidTestId
+            productionId = adConfig.androidProductionId
+        } else {
+            testId = adConfig.iosTestId
+            productionId = adConfig.iosProductionId
+        }
+
+        const adUnitId = Constants.isDevice && !__DEV__ ? productionId : testId
+        await AdMobInterstitial.setAdUnitID(adUnitId);
+    }
+
+    const showAd = async () => {
+        await AdMobInterstitial.requestAdAsync({ servePersonalizedAds: true});
+        await AdMobInterstitial.showAdAsync();
+    }
 
     const startOverAlert = () => {
         Alert.alert(
@@ -29,6 +55,8 @@ export default function SettingsView({ navigation }) {
 
     const startOver = () => {
         resetProgress()
+        adSetup()
+        showAd()
 
         navigation.reset({
             index: 0,
@@ -40,9 +68,9 @@ export default function SettingsView({ navigation }) {
         let uri
 
         if (Platform.OS == "ios")
-            uri = "itms-apps://itunes.apple.com/app/id..."
+            uri = "itms-apps://apps.apple.com/id/app/head-car-race/id1541874517?l=id"
         else
-            uri = "market://details?id=com.janfranco.snowpiercer"
+            uri = "market://details?id=com.janfranco.headtrackrace"
 
         Linking.openURL(uri)
     }
@@ -50,9 +78,6 @@ export default function SettingsView({ navigation }) {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.headerContainer}>
-                <TouchableOpacity style={styles.goBackBtn} onPress={() => navigation.goBack(null)}>
-                    <Image style={styles.goBackImage} source={require("../assets/icon.png")}/>
-                </TouchableOpacity>
                 <Text style={styles.titleText}>{text[language].settings.labels.settings}</Text>
             </View>
             <View style={styles.settingsContainer}>     
@@ -130,16 +155,14 @@ export default function SettingsView({ navigation }) {
                         <Text>{text[language].settings.labels.moreGamesText}</Text>
                     </View>
                     <TouchableOpacity style={{justifyContent: "center", flex: 0.25}} 
-                        onPress={() => openMarket()}
-                    >
+                        onPress={() => openMarket()}>
                         <View style={styles.button}>
                             <Text style={styles.buttonText}>{text[language].settings.labels.moreGamesBtn}</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
                 <TouchableOpacity style={{justifyContent: "center", height: 70, width: "80%"}} 
-                    onPress={() => navigation.navigate("AboutView")}
-                >
+                    onPress={() => navigation.navigate("AboutView")}>
                     <View style={styles.button}>
                         <Text style={styles.buttonText}>{text[language].settings.labels.about}</Text>
                     </View>

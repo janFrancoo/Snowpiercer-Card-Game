@@ -13,6 +13,8 @@ import people from "../scenerios/people"
 import { characterImages } from '../helpers/character_images'
 import { getScenerioIndexById } from "../helpers/scenerio_helper"
 import ReactInterval from "react-interval"
+import { AdMobInterstitial, setTestDeviceIDAsync } from 'expo-ads-admob';
+import { adConfig } from "../config/ad"
 
 export default function CardGameView({ navigation }) {
     console.disableYellowBox = true;
@@ -260,12 +262,12 @@ export default function CardGameView({ navigation }) {
                         translateX: slideFromTopLeft.interpolate({
                             inputRange: [0, 1],
                             outputRange: [from, 0]
-                        }),
+                        })}, 
+                        {
                         translateY: slideFromTopLeft.interpolate({
                             inputRange: [0, 1],
                             outputRange: [from, 0]
-                        })
-                    }],
+                        })}],
                     height: "55%",
                     width: "80%",
                     borderRadius: 12,
@@ -346,11 +348,29 @@ export default function CardGameView({ navigation }) {
         })
     }
 
+    const adSetup = async () => {
+        var productionId
+
+        if (Platform.OS === 'android')
+            productionId = adConfig.androidProductionId
+        else
+            productionId = adConfig.iosProductionId
+
+        await AdMobInterstitial.setAdUnitID(productionId);
+    }
+
+    const showAd = async () => {
+        await AdMobInterstitial.requestAdAsync({ servePersonalizedAds: true});
+        await AdMobInterstitial.showAdAsync();
+    }
+
     useEffect(() => {
+        adSetup()
         setIndex(Math.floor(Math.random() * cardLimit))
         loadProgress()
         loadSwipeSound()
         start()
+        showAd()
     }, [])
 
     return (
@@ -417,6 +437,7 @@ export default function CardGameView({ navigation }) {
                     renderCard={(card) => <Card card={card} />} 
                     onSwipedLeft={(idx) => onSwiped(idx, "left")}
                     onSwipedRight={(idx) => onSwiped(idx, "right")}
+                    overlayOpacityHorizontalThreshold={width / 10}
                     disableTopSwipe
                     disableBottomSwipe
                     animateCardOpacity
@@ -430,7 +451,7 @@ export default function CardGameView({ navigation }) {
                             style: {
                                 label: {
                                     color: colors.white,
-                                    fontSize: 16
+                                    fontSize: 18
                                 },
                                 wrapper: {
                                     flexDirection: "column",
@@ -446,7 +467,7 @@ export default function CardGameView({ navigation }) {
                             style: {
                                 label: {
                                     color: colors.white,
-                                    fontSize: 16
+                                    fontSize: 18
                                 },
                                 wrapper: {
                                     flexDirection: "column",
@@ -526,7 +547,7 @@ const styles = StyleSheet.create({
         color: colors.black,
         textAlign: "center",
         marginTop: 20,
-        fontSize: 16
+        fontSize: 21
     },
     maskedView: { 
         flex: 1, 

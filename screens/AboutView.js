@@ -1,16 +1,21 @@
 import React from 'react'
-import { StyleSheet, Text, View, ScrollView, Linking } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Linking, TouchableOpacity } from 'react-native'
 import text from "../config/text"
 import colors from "../config/colors"
 import { useStateValue } from "../helpers/StateProvider"
 import { privacyPolicyPartOne, privacyPolicyPartTwo } from "../config/privacy"
 
-export default function AboutView() {
+export default function AboutView({ navigation }) {
 
     const [{ language }, dispatch] = useStateValue();
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity style={{justifyContent: "center", flex: 0.25}} onPress={() => navigation.goBack(null)}>
+                <View style={styles.button}>
+                    <Text style={styles.buttonText}>X</Text>
+                </View>
+            </TouchableOpacity>
             <View style={styles.about}>
                 <ScrollView>
                     <Text style={styles.text}>
@@ -55,5 +60,16 @@ const styles = StyleSheet.create({
     text: {
         color: colors.white,
         fontSize: 16
+    },
+    button: {
+        backgroundColor: colors.black,
+        borderRadius: 12,
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "2%"
+    },
+    buttonText: {
+        color: colors.white,
+        fontSize: 14,
     }
 })

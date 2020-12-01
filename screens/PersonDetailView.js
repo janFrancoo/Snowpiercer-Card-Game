@@ -9,7 +9,7 @@ export default function PersonDetailView({ navigation, route }) {
         <SafeAreaView style={styles.container}>
             <ImageBackground style={styles.profileBackground} source={characterImages[route.params.person.image].uri} blurRadius={4} >
                 <TouchableOpacity style={styles.goBackBtn} onPress={() => navigation.goBack(null)}>
-                    <Image style={styles.goBackImage} source={require("../assets/icon.png")}></Image>
+                    <Image style={styles.goBackImage} source={require("../assets/images/back.png")}></Image>
                 </TouchableOpacity>
                 <Image style={styles.profileAvatar} source={characterImages[route.params.person.image].uri}/>
                 <Text style={styles.textTitle}>{route.params.person.title}</Text>
@@ -77,8 +77,6 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: "5%",
         left: "8%",
-        borderColor: "red",
-        borderWidth: 2
     },
     goBackImage: {
         width: 20,
