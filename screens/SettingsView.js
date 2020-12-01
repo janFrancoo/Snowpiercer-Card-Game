@@ -9,36 +9,10 @@ import { useStateValue } from "../helpers/StateProvider"
 import BottomNav from "./BottomNav"
 import { storeData } from "../helpers/storage_helper"
 import { resetProgress } from "../helpers/scenerio_helper"
-import { AdMobInterstitial, setTestDeviceIDAsync } from 'expo-ads-admob';
-import Constants from "expo-constants"
-import { adConfig } from "../config/ad"
 
 export default function SettingsView({ navigation }) {
 
     const [{ language, music, musicStatus, volume }, dispatch] = useStateValue();
-
-    const adSetup = async () => {
-        await setTestDeviceIDAsync('EMULATOR');
-
-        var testId
-        var productionId
-
-        if (Platform.OS === 'android') {
-            testId = adConfig.androidTestId
-            productionId = adConfig.androidProductionId
-        } else {
-            testId = adConfig.iosTestId
-            productionId = adConfig.iosProductionId
-        }
-
-        const adUnitId = Constants.isDevice && !__DEV__ ? productionId : testId
-        await AdMobInterstitial.setAdUnitID(adUnitId);
-    }
-
-    const showAd = async () => {
-        await AdMobInterstitial.requestAdAsync({ servePersonalizedAds: true});
-        await AdMobInterstitial.showAdAsync();
-    }
 
     const startOverAlert = () => {
         Alert.alert(
@@ -55,8 +29,6 @@ export default function SettingsView({ navigation }) {
 
     const startOver = () => {
         resetProgress()
-        adSetup()
-        showAd()
 
         navigation.reset({
             index: 0,

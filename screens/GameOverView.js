@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react'
-import { StyleSheet, Text, View, Animated, TouchableOpacity, Platform } from 'react-native'
+import { StyleSheet, Text, View, Animated, TouchableOpacity } from 'react-native'
 import colors from "../config/colors"
 import gameOver from "../scenerios/gameOver"
 import { resetProgress } from "../helpers/scenerio_helper"

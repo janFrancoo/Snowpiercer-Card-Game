@@ -13,7 +13,7 @@ import people from "../scenerios/people"
 import { characterImages } from '../helpers/character_images'
 import { getScenerioIndexById } from "../helpers/scenerio_helper"
 import ReactInterval from "react-interval"
-import { AdMobInterstitial, setTestDeviceIDAsync } from 'expo-ads-admob';
+import { AdMobInterstitial } from 'expo-ads-admob';
 import { adConfig } from "../config/ad"
 
 export default function CardGameView({ navigation }) {
